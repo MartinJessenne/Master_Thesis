@@ -1,0 +1,15 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Virtual Environment (created by uv)
+.venv/
+venv/
+ENV/
+
+# Environment variables (secrets)
+.env
+
+# Editor settings (Optional but recommended)
+.vscode/
+.idea/
