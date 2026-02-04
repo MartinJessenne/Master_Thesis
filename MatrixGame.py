@@ -8,35 +8,24 @@ app = marimo.App()
 def _():
     import numpy as np
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import LogLocator
     import marimo as mo
-    return mo, np, plt
+    return LogLocator, mo, np, plt
 
 
 @app.cell
 def _(np):
-    def projection_simplex(v : np.array):
-        """ projette un vecteur quelconque sur 
-        le simplexe pour la norme euclidienne"""
+    def projection_simplex(v, z=1):
+        n_features = v.shape[0]
+        u = np.sort(v)[::-1]
+        cssv = np.cumsum(u) - z
+        ind = np.arange(n_features) + 1
+        cond = u - cssv / ind > 0
+        rho = ind[cond][-1]
+        theta = cssv[cond][-1] / float(rho)
+        w = np.maximum(v - theta, 0)
+        return w
 
-        upper_bound : np.float = np.max(v)
-        lower_bound : np.float = np.max(v) - 1 
-        theta : np.float = (lower_bound + upper_bound)/2
-        epsilon : np.float = 1e-5
-        regression : np.array = np.maximum(0, v - theta)
-        error : np.float = (np.sum(regression) - 1)
-
-        while (error)**2 > epsilon :
-            if error >= 0:
-                lower_bound = theta
-                theta = 0.5*(lower_bound + upper_bound)
-
-            else :
-                upper_bound = theta
-                theta = 0.5*(lower_bound + upper_bound)
-
-            regression = np.maximum(0, v - theta)
-            error = (np.sum(regression) - 1)
-        return regression
 
     def duality_gap(x, y, A):
         """
@@ -57,11 +46,10 @@ def _(duality_gap, np, projection_simplex):
         def __init__(self, x_init, y_init, A, eta):
             self.x = x_init.copy()
             self.y = y_init.copy()
-            # Pour l'optimisme, on a besoin des gradients à t-1
-            # Au début (t=0), on peut supposer que g_{t-1} = g_t ou 0.
-            # Ici on initialise les "prev" comme les actuels pour simplifier le pas 1.
-            self.x_prev = x_init.copy()
-            self.y_prev = y_init.copy()
+
+            self.x_hat = x_init.copy()
+            self.y_hat = y_init.copy()
+
             self.grad_x_prev = np.zeros_like(x_init)
             self.grad_y_prev = np.zeros_like(y_init)
 
@@ -74,10 +62,10 @@ def _(duality_gap, np, projection_simplex):
             self.gaps = [duality_gap(x_init, y_init, A)]
 
         def _compute_gradients(self, x, y):
-            # Gradient pour x (Minimizer) : A * y
+            # Gradient pour x (Minimiser) : A * y
             grad_x = self.A @ y
-            # Gradient pour y (Maximizer) : A.T * x (on fait une montée de gradient)
-            grad_y = self.A.T @ x 
+            # Gradient pour y (Minimiser) : -A.T * x (on va faire une montée de gradient)
+            grad_y = -self.A.T @ x 
             return grad_x, grad_y
 
         def step(self):
@@ -85,27 +73,22 @@ def _(duality_gap, np, projection_simplex):
 
     class OGDA(GameOptimizer):
         """Optimistic Gradient Descent Ascent"""
-        def __init__(self, x_init, y_init, A, eta):
-            super().__init__(x_init, y_init, A, eta)
-            # Initialize hats (anchors) same as x, y
-            self.x_hat = x_init.copy()
-            self.y_hat = y_init.copy()
 
         def step(self):
             # 1. Calcul des gradients actuels
             grad_x, grad_y = self._compute_gradients(self.x, self.y)
 
             # 2. Mise à jour des x_hat et y_hat 
-            self.x_hat = projection_simplex(self.x_hat - self.eta * grad_x)
-            self.y_hat = projection_simplex(self.y_hat + self.eta * grad_y)
+            self.x_hat = self.x_hat - self.eta * grad_x
+            self.y_hat = self.y_hat - self.eta * grad_y
 
             # 4. Mise à jour des stratégies x et y
             # On minimise x donc on y soustrait la direction de la plus grande pente
             # On maximise y donc on y ajoute la direction de la plus grande pente
             self.x = projection_simplex(self.x_hat - self.eta * grad_x)
-            self.y = projection_simplex(self.y_hat + self.eta * grad_y)
+            self.y = projection_simplex(self.y_hat - self.eta * grad_y)
 
-        
+
             """
                 x_hat = prox_fn(gx_, x_hat, eta)
                 x = prox_fn(gx_, x_hat, eta)
@@ -130,13 +113,18 @@ def _(duality_gap, np, projection_simplex):
             grad_x, grad_y = self._compute_gradients(self.x, self.y)
 
 
-            # 3. Mise à jour Multiplicative (Exponentielle)
+            # 2. Mise à jour Multiplicative de x_hat et y_hat (Exponentielle)
             # x minimisation : multiplie par exp(-eta * gradient)
-            self.x = self.x * np.exp(-self.eta * grad_x)
-            self.x /= np.sum(self.x) # Renormalisation (Projection KL)
+            self.x_hat = self.x_hat * np.exp(-self.eta * grad_x)
 
-            # y maximisation : multiplie par exp(+eta * gradient)
-            self.y = self.y * np.exp(self.eta * grad_y)
+            # y maximisation : multiplie par exp(-eta * gradient)
+            self.y_hat = self.y_hat * np.exp(-self.eta * grad_y)
+
+            # 3. Mise à jour des stratégies x et y
+            self.x = self.x_hat * np.exp(-self.eta * grad_x)
+            self.x /= np.sum(self.x)
+
+            self.y = self.y_hat * np.exp(-self.eta * grad_y)
             self.y /= np.sum(self.y)
 
             # 4. Sauvegarde
@@ -202,6 +190,33 @@ def _(convergence_results, experiment, np):
 
 @app.cell
 def _(plt):
+    import matplotlib.ticker as ticker
+
+    plt.rcParams.update({
+        # Text Sizes
+        'font.size': 14,
+        'axes.titlesize': 16,
+        'axes.labelsize': 16,
+        'xtick.labelsize': 14,
+        'ytick.labelsize': 14,
+        'legend.fontsize': 14,
+
+        # Line Styles
+        'lines.linewidth': 2.5,
+        'figure.figsize': (10, 15),
+
+        # Grid Configuration (New!)
+        'axes.grid': True,           # Turn grid on by default
+        'axes.grid.axis': 'both',    # Grid on x and y
+        'axes.grid.which': 'major',  # Only draw grid for major ticks (powers of 10)
+        'grid.alpha': 0.6,           # Make grid slightly transparent
+        'grid.linestyle': '--'       # Dashed lines
+    })
+    return
+
+
+@app.cell
+def _(LogLocator, plt):
     def plot_convergence_results(Results):
         fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(20,40))
         for name, res in Results.items():
@@ -217,6 +232,16 @@ def _(plt):
             ax.legend(fontsize=15)
             ax.set_xlabel("Iterations")
             ax.set_ylabel("Duality Gap")
+
+            ax.xaxis.set_major_locator(LogLocator(base=10.0, subs=(1.0,)))
+            ax.yaxis.set_major_locator(LogLocator(base=10.0, subs=(1.0,)))
+        
+            # Remove minor ticks (the small lines between powers of 10)
+            ax.xaxis.set_minor_locator(plt.NullLocator())
+            ax.yaxis.set_minor_locator(plt.NullLocator())
+        
+            # Enable the grid for major ticks only
+            ax.grid(True, which="major", ls="-", alpha=0.6)
             ax.grid(True, which="both", linestyle="--")
 
         return fig
@@ -227,15 +252,16 @@ def _(plt):
 def _(Results_OGDA_RPS, Results_OMWU_RPS, plot_convergence_results):
     plot_convergence_results({
         "OGDA RPS": Results_OGDA_RPS,
-        "OMWU RPS": Results_OMWU_RPS
+        "OMWU RPS": Results_OMWU_RPS,
     })
     return
 
 
 @app.cell
 def _(mo):
-    delta = mo.ui.slider(start=0., stop=0.5, step=1e-3, label="delta value")
-    return (delta,)
+    delta = mo.ui.slider(start=0., stop=0.5, step=1e-3, label="delta value", value=1e-2)
+    num_steps_delta = mo.ui.slider(start=100, stop=1_000_000, step=100, label="number of iterations", value=10_000)
+    return delta, num_steps_delta
 
 
 @app.cell
@@ -245,7 +271,20 @@ def _(delta, mo):
 
 
 @app.cell
-def _(convergence_results, delta, experiment, np, plot_convergence_results):
+def _(mo, num_steps_delta):
+    mo.hstack([num_steps_delta, mo.md(f"Has value: {num_steps_delta.value}")])
+    return
+
+
+@app.cell
+def _(
+    convergence_results,
+    delta,
+    experiment,
+    np,
+    num_steps_delta,
+    plot_convergence_results,
+):
     _A_delta = np.array([[1/2 + delta.value, 1/2],
                          [0, 1]])
 
@@ -253,14 +292,20 @@ def _(convergence_results, delta, experiment, np, plot_convergence_results):
     _y_init = np.array([1/2, 1/2])
 
     _eta = 0.1
-    num_steps_delta : int = 4000
-    ogda_delta_gaps, omwu_delta_gaps = experiment(_A_delta, _x_init, _y_init, _eta, num_steps_delta)
+
+    ogda_delta_gaps, omwu_delta_gaps = experiment(_A_delta, _x_init, _y_init, _eta, num_steps_delta.value)
+
     Results_OGDA_Delta = convergence_results(ogda_delta_gaps)
     Results_OMWU_Delta = convergence_results(omwu_delta_gaps)
     plot_convergence_results({
-        "OGDA Delta": Results_OGDA_Delta,
-        "OMWU Delta": Results_OMWU_Delta
+        "OGDA Delta Game": Results_OGDA_Delta,
+        "OMWU Delta Game": Results_OMWU_Delta,
     })
+    return
+
+
+@app.cell
+def _():
     return
 
 
