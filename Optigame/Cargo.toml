@@ -1,0 +1,9 @@
+[package]
+name = "Optigame"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+enum_dispatch = "0.3.13"
+ndarray = "0.17.2"
+ndarray-npy = "0.10.0"
