@@ -1,9 +1,13 @@
 [package]
-name = "Optigame"
+name = "optigame"
 version = "0.1.0"
 edition = "2024"
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "optigame"
+crate-type = ["cdylib"]
+
 [dependencies]
-enum_dispatch = "0.3.13"
-ndarray = "0.17.2"
-ndarray-npy = "0.10.0"
+numpy = "0.28.0"
+pyo3 = { version = "0.28.2", features = ["extension-module"] }

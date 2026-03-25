@@ -1,3 +1,7 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
 [project]
 name = "master-thesis"
 version = "0.1.0"
@@ -8,6 +12,8 @@ dependencies = [
     "marimo>=0.20.2",
     "matplotlib>=3.10.8",
     "numpy>=2.4.1",
+    "plotly>=6.6.0",
     "pyzmq>=27.1.0",
+    "scipy>=1.17.1",
     "ty>=0.0.24",
 ]

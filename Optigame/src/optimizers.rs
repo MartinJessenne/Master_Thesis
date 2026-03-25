@@ -1,4 +1,5 @@
 use core::f64;
+use std::f64::EPSILON;
 
 use enum_dispatch::enum_dispatch;
 
@@ -10,34 +11,42 @@ pub struct Ogda {
     y_hat: S,
 }
 
+impl Ogda {
+    pub fn new(eta: f64, dim: usize) -> Self {
+        let x_hat = S::from_projected(V::zeros(dim));
+        let y_hat = S::from_projected(V::zeros(dim));
+        Ogda { eta, x_hat, y_hat }
+    }
+}
+
 pub struct OmwuOomd {
     eta: f64,
     x_hat: S,
     y_hat: S, 
-    grad_x_prev: V,
-    grad_y_prev: V,
 }
 
 impl OmwuOomd {
-    pub fn new(eta: f64, x_hat: S, y_hat: S) -> Self {
-        let grad_x_prev = V::zeros(x_hat.len());
-        let grad_y_prev = V::zeros(y_hat.len());
+    pub fn new(eta: f64, dim: usize) -> Self {
+        let x_hat = S::from_projected(V::zeros(dim));
+        let y_hat = S::from_projected(V::zeros(dim));
         Self {
             eta,
             x_hat,
             y_hat,
-            grad_x_prev,
-            grad_y_prev,
         }
     }
 }
 
 pub struct OmwuOftrl {
     eta: f64,
-    grad_x_prev: V,
-    grad_y_prev: V,
     cumulative_grad_x : V,
     cumulative_grad_y : V,
+}
+
+impl OmwuOftrl {
+    pub fn new(eta: f64, dim: usize) -> Self {
+        OmwuOftrl { eta, cumulative_grad_x: V::zeros(dim), cumulative_grad_y: V::zeros(dim) }
+    }
 }
 
 #[enum_dispatch(OptimizerStrategy)]
@@ -80,17 +89,26 @@ impl OptimizerStrategy for OmwuOomd {
     fn step(&mut self, state: &mut GameState) -> f64 {
         let (grad_x, grad_y) = state.compute_gradient();
 
+        let step_x = -self.eta * &grad_x;
+        let step_y = -self.eta * &grad_y;
+
+        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+
         // Multiplicative update of \hat{x} and \hat{y}
-        let mut x_hat = self.x_hat.as_array() * (- self.eta * &grad_x).map(|&step| f64::exp(step));
-        let mut y_hat = self.y_hat.as_array() * (- self.eta * &grad_y).map(|&step| f64::exp(step));
+        let mut x_hat = self.x_hat.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));
+        let mut y_hat = self.y_hat.as_array() * step_y.map(|&s| f64::exp(s - max_step_y));
+
+        x_hat.mapv_inplace(|v| v + EPSILON);
+        y_hat.mapv_inplace(|v| v + EPSILON);
 
         // Normalisation de \hat{x} et \hat{y}
         x_hat /= x_hat.sum();
         y_hat /= y_hat.sum();
 
         // update the strategy
-        let mut x = &x_hat * (- self.eta * &grad_x).map(|&step|f64::exp(step));
-        let mut y = &y_hat * (- self.eta * &grad_y).map(|&step| f64::exp(step));
+        let mut x = &x_hat * step_x.map(|&s| f64::exp(s - max_step_x));
+        let mut y = &y_hat * step_y.map(|&s| f64::exp(s - max_step_y));
 
         x /= x.sum();
         y /= y.sum();
@@ -113,14 +131,17 @@ impl OptimizerStrategy for OmwuOftrl {
         self.cumulative_grad_x = &self.cumulative_grad_x + &grad_x;
         self.cumulative_grad_y = &self.cumulative_grad_y + &grad_y;
 
-        // Multiplicative update of \hat{x} and \hat{y}
+        // Multiplicative update of \hat{x} and \hat{y} using the Log-Sum-Exp trick
 
         let step_x = -self.eta * (&self.cumulative_grad_x + &grad_x);
         let step_y = -self.eta * (&self.cumulative_grad_y + &grad_y);
 
+        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+
         // update the strategy
-        let mut x = state.x.as_array() * &(step_x).map(|&step| f64::exp(step));
-        let mut y = state.y.as_array() * &(step_y).map(|&step| f64::exp(step));
+        let mut x = state.x.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));
+        let mut y = state.y.as_array() * step_y.map(|&s| f64::exp(s - max_step_y));
 
         x /= x.sum();
         y /= y.sum();

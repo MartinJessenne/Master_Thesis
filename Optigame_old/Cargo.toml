@@ -1,0 +1,19 @@
+[package]
+name = "Optigame"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "Optigame"
+crate-type = ["cdylib"]
+
+[dependencies]
+enum_dispatch = "0.3.13"
+linfa = "0.8.1"
+linfa-reduction = "0.8.1"
+ndarray = "0.17.2"
+ndarray-npy = "0.10"
+numpy = "0.28"
+rand = "0.10.0"
+rayon = "1.11.0"
+pyo3 = { version = "0.28.2", features = ["extension-module"]}
