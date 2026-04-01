@@ -2,9 +2,12 @@ use core::f64;
 use std::f64::EPSILON;
 
 use enum_dispatch::enum_dispatch;
+use pyo3::{pyclass, Python, pymethods};
 
 use crate::{experiments::GameState, math::{S, V}};
 
+#[pyclass]
+#[derive(Clone)]
 pub struct Ogda {
     eta: f64,
     x_hat: S, 
@@ -19,6 +22,21 @@ impl Ogda {
     }
 }
 
+#[pymethods]
+impl Ogda {
+    #[new]
+    pub fn py_new(
+        eta: f64,
+        dim: usize,
+    ) -> Self {
+        let x_hat = S::from_projected(V::zeros(dim));
+        let y_hat = S::from_projected(V::zeros(dim));
+        Ogda { eta, x_hat, y_hat }
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
 pub struct OmwuOomd {
     eta: f64,
     x_hat: S,
@@ -37,6 +55,16 @@ impl OmwuOomd {
     }
 }
 
+#[pymethods]
+impl OmwuOomd {
+    #[new]
+    pub fn py_new(eta: f64, dim: usize) -> Self {
+        Self::new(eta, dim)
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
 pub struct OmwuOftrl {
     eta: f64,
     cumulative_grad_x : V,
@@ -49,12 +77,50 @@ impl OmwuOftrl {
     }
 }
 
+#[pymethods]
+impl OmwuOftrl {
+    #[new]
+    pub fn py_new(eta: f64, dim: usize) -> Self {
+        Self::new(eta, dim)
+    }
+}
+
+#[pyclass]
 #[enum_dispatch(OptimizerStrategy)]
+#[derive(Clone)]
 pub enum Optimizer {
     Ogda(Ogda),
     OmwuOomd(OmwuOomd),
     OmwuOftrl(OmwuOftrl),
 }
+
+#[pymethods]
+impl Optimizer {
+    #[staticmethod]
+    pub fn ogda(_py: Python<'_>, eta: f64, dim: usize) -> Self {
+        // Instantiate Ogda using its existing constructor
+        // and wraps it in the Optimizer::Ogda variant
+        let ogda = Ogda::new(eta, dim);
+        Self::Ogda(ogda)
+    }
+
+    #[staticmethod]
+    pub fn omwuoomd(_py: Python<'_>, eta: f64, dim: usize) -> Self {
+        // Instantiate OMWU Optimistic Online Mirror Descent using its existing constructor
+        // and wraps it in the Optimizer::OmwuOomd variant
+        let omwu = OmwuOomd::new(eta, dim);
+        Self::OmwuOomd(omwu)
+    }
+
+    #[staticmethod]
+    pub fn omwuoftrl(_py: Python<'_>, eta: f64, dim: usize) -> Self {
+        // Instantiate OMWU Online Follow the Regularized Leader using its existing constructor
+        // and wraps it in the Optimizer::OmwuOftrl variant
+        let omwu = OmwuOftrl::new(eta, dim);
+        Self::OmwuOftrl(omwu)
+    }
+}
+
 
 #[enum_dispatch]
 /// The OptimizerStrategy Trait implement the step method that allows, given a mutable reference to a GameState
@@ -89,11 +155,11 @@ impl OptimizerStrategy for OmwuOomd {
     fn step(&mut self, state: &mut GameState) -> f64 {
         let (grad_x, grad_y) = state.compute_gradient();
 
-        let step_x = -self.eta * &grad_x;
-        let step_y = -self.eta * &grad_y;
+        let step_x: V = -self.eta * &grad_x;
+        let step_y: V = -self.eta * &grad_y;
 
-        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
-        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
+        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
 
         // Multiplicative update of \hat{x} and \hat{y}
         let mut x_hat = self.x_hat.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));
@@ -136,8 +202,8 @@ impl OptimizerStrategy for OmwuOftrl {
         let step_x = -self.eta * (&self.cumulative_grad_x + &grad_x);
         let step_y = -self.eta * (&self.cumulative_grad_y + &grad_y);
 
-        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
-        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let max_step_x = step_x.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
+        let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
 
         // update the strategy
         let mut x = state.x.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));

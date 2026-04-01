@@ -1,13 +1,17 @@
 use pyo3::prelude::*;
 
+pub mod math;
+pub mod experiments;
+pub mod optimizers;
+
 /// A Python module implemented in Rust.
 #[pymodule]
 mod optigame {
-    use pyo3::prelude::*;
+    
 
-    /// Formats the sum of two numbers as string.
-    #[pyfunction]
-    fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-        Ok((a + b).to_string())
-    }
+    #[pymodule_export]
+    pub use crate::experiments::{GameState, Experiment};
+
+    #[pymodule_export]
+    pub use crate::optimizers::{Ogda, OmwuOftrl, OmwuOomd, Optimizer};
 }

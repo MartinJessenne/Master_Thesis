@@ -11,3 +11,9 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+dependencies = [
+    "marimo>=0.22.0",
+    "matplotlib>=3.10.8",
+    "maturin>=1.12.6",
+    "plotly>=6.6.0",
+]
