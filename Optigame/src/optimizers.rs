@@ -194,11 +194,11 @@ impl OptimizerStrategy for OmwuOftrl {
     fn step(&mut self,state: &mut GameState) -> f64 {
         let (grad_x, grad_y) = state.compute_gradient();
 
+        // update the cumulative gradient
         self.cumulative_grad_x = &self.cumulative_grad_x + &grad_x;
         self.cumulative_grad_y = &self.cumulative_grad_y + &grad_y;
 
-        // Multiplicative update of \hat{x} and \hat{y} using the Log-Sum-Exp trick
-
+        // Add the current gradient again, the optimism part 
         let step_x = -self.eta * (&self.cumulative_grad_x + &grad_x);
         let step_y = -self.eta * (&self.cumulative_grad_y + &grad_y);
 
@@ -206,8 +206,8 @@ impl OptimizerStrategy for OmwuOftrl {
         let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
 
         // update the strategy
-        let mut x = state.x.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));
-        let mut y = state.y.as_array() * step_y.map(|&s| f64::exp(s - max_step_y));
+        let mut x = step_x.map(|&s| f64::exp(s - max_step_x));
+        let mut y = step_y.map(|&s| f64::exp(s - max_step_y));
 
         x /= x.sum();
         y /= y.sum();

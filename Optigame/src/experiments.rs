@@ -3,8 +3,8 @@ use ndarray::Axis;
 use crate::math::{V, M, S};
 use crate::optimizers::{Optimizer, OptimizerStrategy};
 use rayon::prelude::*;
-use ndarray::Array2;
-use pyo3::{pymethods, Python, Py, pyclass, Bound};
+use ndarray::{Array2, array};
+use pyo3::{pymethods, Python, Py, pyclass, Bound, pyfunction};
 use numpy::{ToPyArray, PyArray2, PyArrayMethods, PyArray1};
 
 #[pyclass]
@@ -209,17 +209,36 @@ impl Experiment {
     }
 }
 
-#[pyclass]
-pub enum Method{
-    PCA,
-    Polar, 
-    ElementWise,
-}
+#[pyfunction]
+pub fn neighborhood_exploration(p_lambda: numpy::PyReadonlyArray1<f64>, q_gamma: numpy::PyReadonlyArray1<f64>, optimizer: Optimizer, num_steps: usize, normalize_matrix: bool) -> Vec<GameResult> {
+    let list_of_results: Vec<GameResult> = p_lambda.as_slice().expect("p_lambda must be contiguous").par_iter().zip(q_gamma.as_slice().expect("q_lambda must be contiguous")).map(|(&lambda, &gamma)| {
+        let S = 1.;
+        let a = 1. + S*(1. - lambda - gamma);
+        let b = 1. - gamma*S;
+        let c = 1. - lambda*S;
+        let d = 1.;
 
-#[pyclass]
-pub struct Neighborhood {
-    pub game_states: Vec<GameState>,
-    pub pca_coordinates: Array2<f64>,
+        let mut matrix = array![[a, b], [c, d]];
+
+        if normalize_matrix {
+            let max_component = matrix.iter().fold(f64::NEG_INFINITY, |acc: f64, &b| acc.max(b));
+            let min_component = matrix.iter().fold(f64::INFINITY, |acc: f64, &b| acc.min(b));
+            
+            matrix = (matrix - min_component) / (max_component - min_component);
+        }
+
+        let x = S::from_projected(array![0., 0.]); // TODO: generalize to any dimension
+        let y = S::from_projected(array![0., 0.]);
+
+        let game_state = GameState{x: x, y: y, a: matrix};
+        let optimizer = optimizer.clone();
+        let mut experiment = Experiment{state: game_state, optimizer, num_steps};
+
+        let result = experiment.run_experiment_until_convergence_in_place();
+        result
+    }).collect();
+
+    list_of_results
 }
 
 //#[pymethods]

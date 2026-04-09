@@ -17,7 +17,7 @@ impl S {
         Self { inner: v.simplex_projection(1.0)}
     }
 
-    pub fn build(v: V) -> Result<Self, &'static str> {
+    pub fn build(v: V) -> Result<Self, String> {
         let sum: f64 = v.iter().sum();
 
         let all_positive = v.iter().all(|&x| x >= 0.0);
@@ -25,7 +25,7 @@ impl S {
         if (sum - 1.0).abs() < 1e-6 && all_positive {
             return Ok(Self { inner: v});
         } else {
-            return Err("v does not belong on the simplex.");
+            return Err(format!("v does not belong on the simplex. Last values : {v:#?}"));
         }
     }
 
