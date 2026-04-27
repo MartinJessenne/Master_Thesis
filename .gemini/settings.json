@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "gitnexus": {
+      "command": "npx",
+      "args": ["gitnexus", "mcp"],
+      "cwd": "C:\\Users\\Martin\\Master_Thesis",
+      "trust": true
+    }
+  }
+}

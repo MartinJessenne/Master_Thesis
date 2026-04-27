@@ -7,13 +7,14 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import optigame
-    from analysis import neighborhood_exploration_compute
+    from analysis_utils import neighborhood_exploration_compute
     import time
     import pandas as pd
     import cProfile
     import pstats
+    import matplotlib.pyplot as plt
 
-    return neighborhood_exploration_compute, optigame, time
+    return neighborhood_exploration_compute, optigame, plt, time
 
 
 @app.cell(hide_code=True)
@@ -67,7 +68,7 @@ def _(neighborhood_exploration_compute, optigame, plt, time):
 
         ax.set_yscale('log') # Important to show scale differences visually
         ax.set_ylabel('Execution Time (seconds) [Log Scale]')
-        ax.set_title('Compute Efficiency: Python vs Rust Grid Optimization')
+        ax.set_title('Compute Efficiency: Python vs Rust Optimization')
         ax.grid(axis='y', linestyle='--', alpha=0.7, which='both')
 
         # Annotate bars with exact time
@@ -77,6 +78,7 @@ def _(neighborhood_exploration_compute, optigame, plt, time):
                     f'{duration:.2f}s', ha='center', va='bottom', fontsize=12)
 
         plt.tight_layout()
+        plt.ylim(top=200) # Sets the top to 200, well above your 93.09 label
         return fig
 
     # Warning: Using the true defaults (500 pts, 10k steps) will take Python ~20 mins.
