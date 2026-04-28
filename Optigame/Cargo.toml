@@ -6,7 +6,7 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "optigame"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 enum_dispatch = "0.3.13"
@@ -15,6 +15,6 @@ linfa-reduction = "0.8.1"
 ndarray = "0.16.1"
 ndarray-rand = "0.15.0"
 numpy = "0.23.0"
-pyo3 = { version = "0.23.3", features = ["extension-module"] }
+pyo3 = { version = "0.23.3"}
 rand = "0.10.0"
 rayon = "1.11.0"

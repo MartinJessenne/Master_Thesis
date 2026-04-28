@@ -1,11 +1,12 @@
-
 use ndarray::Axis;
 use crate::math::{V, M, S};
 use crate::optimizers::{Optimizer, OptimizerStrategy};
 use rayon::prelude::*;
-use ndarray::{Array2, array};
+use ndarray::{Array, Array2, array};
 use pyo3::{pymethods, Python, Py, pyclass, Bound, pyfunction};
 use numpy::{ToPyArray, PyArray2, PyArrayMethods, PyArray1};
+use ndarray_rand::{RandomExt, rand_distr::Uniform};
+use ndarray_rand::rand_distr::Distribution;
 
 #[pyclass]
 #[derive(Debug, Clone)]
@@ -241,73 +242,13 @@ pub fn neighborhood_exploration(p_lambda: numpy::PyReadonlyArray1<f64>, q_gamma:
     list_of_results
 }
 
-//#[pymethods]
-//impl Neighborhood {
-    //#[new]
-    //pub fn py_new(
-        //base_matrix_py: PyReadonlyArray2<f64>,
-        //num_perturbations: usize,
-        //method: Method, // Default to PCA
-    //) -> Self {
-        //let dims = base_matrix_py.dims();
-        //let rows = dims[0];
-        //let cols = dims[1];
-        //let mut rng = rand::rng();
-        
-        //let mut game_states = Vec::<GameState>::with_capacity(num_perturbations);
-        //let mut perturbations = Array3::<f64>::zeros((num_perturbations, rows, cols));
+#[pyfunction]
+pub fn random_neighborhood_exploration(A_delta: numpy::PyReadonlyArray2<f64>, epsilon: f64, num_exploration: usize, optimizer: Optimizer) -> V {
+    let (row, col) = (A_delta.dims()[0], A_delta.dims()[1]);
+    // Initialize random matrices
+    let random_matrices = Array::random((num_exploration, row, col), Uniform::new(0., 10.));
 
-        //let pca_coordinates = Array2::<f64>::zeros((2, num_perturbations)); // At most 2 rows for plotting sake 
-        //for _ in 0..num_perturbations {
-
-            //// First let's create a perturbed initial state 
-            //let perturbation = Array2::random((rows, cols), Uniform::new(-0.1, 0.1));
-            
-            //let a = perturbation + base_matrix_py.as_array();
-            
-            //let x = S::from_projected(V::zeros(rows));
-            //let y = S::from_projected(V::zeros(rows));
-
-            //game_states.push(GameState{x, y, a});
-
-        //}
-
-        //// Create a Linfa Dataset
-
-    //}
-
-//}
-
-//pub fn run_neighborhood_exploration(
-    //neighborhood: Neighborhood, 
-    //optimizers: Vec<Optimizer>,
-    //num_steps: usize,
-//) -> (Array2<f64>, Array2<f64>) {
-
-    //let rows = optimizers.len();
-    //let cols = neighborhood.game_states.len();
-
-    //let mut array_result = Array2::<f64>::zeros((rows, cols));
-    //for (i, optimizer) in optimizers.iter().enumerate() {
-        //let distances: Vec<f64> = neighborhood.game_states.par_iter().map(|state| {
-
-            //// Run the experiment for each perturbed starting state 
-            //let experiment = Experiment::new(state.clone(), optimizer.clone(), num_steps);
-            //let result = experiment.run_experiment_until_convergence();
-            
-            //let perturbed_gaps = result.gaps();
-            
-            //// the retained metric is going to be the max of the duality gap in the last 10% of the iterations
-            //let chaos_metric = perturbed_gaps.iter()
-                                                //.enumerate()
-                                                //.filter(|&(i, _)| i > (num_steps as f64 * 0.9) as usize)
-                                                //.fold(f64::MIN, |acc, (_, &val)| acc.max(val));
-
-            //chaos_metric
-        //}).collect();
-        //let array_row = ndarray::Array1::from_vec(distances);
-        //array_result.row_mut(i).assign(&array_row);
-    //}
-    
-    //(neighborhood.pca_coordinates, array_result)
-//}
+    // Iterating concurrently through random_matrices to collect the results
+    let vec_results = random_matrices.par_iter().map(|U| {let perturbation = A_delta + epsilon * U;
+                                                          let game_result = optimizer(perturbation, )          })
+}

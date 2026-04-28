@@ -1,0 +1,283 @@
+{
+  "main": {
+    "id": "14d9553a3d8a1637",
+    "type": "split",
+    "children": [
+      {
+        "id": "d718b50a7f88f7e7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "16c53d659f4a9642",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20_Logic_and_Method/Method_Visualization.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Method_Visualization"
+            }
+          },
+          {
+            "id": "b4c20b5f4251ef94",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20_Logic_and_Method/Method_Chaos_Metrics.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Method_Chaos_Metrics"
+            }
+          },
+          {
+            "id": "cf082a086046535e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Problèmes d'overflow.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Problèmes d'overflow"
+            }
+          },
+          {
+            "id": "c95c5c24dbfe97a6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Jeu à équilibre arbitraire.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Jeu à équilibre arbitraire"
+            }
+          },
+          {
+            "id": "5a3e8a1fb348195c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Comparaison baseline théorique.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Comparaison baseline théorique"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8f78a56a6e2d07ad",
+    "type": "split",
+    "children": [
+      {
+        "id": "9aac3427d7e345d3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1aa0ae565f58037c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "byModifiedTime",
+                "autoReveal": true
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorateur de fichiers"
+            }
+          },
+          {
+            "id": "1801f6806b42e5a7",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "chaos",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Rechercher"
+            }
+          },
+          {
+            "id": "c541eb632a5f0ea8",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Signets"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 481.5
+  },
+  "right": {
+    "id": "96880c02a3919fdb",
+    "type": "split",
+    "children": [
+      {
+        "id": "7a961d8899612c02",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9bab941460901821",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Profil des stratégies dans le plan 2D.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rétrolien pour Profil des stratégies dans le plan 2D"
+            }
+          },
+          {
+            "id": "afcf19794ca2518c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Exploration aléatoire de voisinage.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Liens sortants de Exploration aléatoire de voisinage"
+            }
+          },
+          {
+            "id": "90e3051ae73062f0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Mots-clés"
+            }
+          },
+          {
+            "id": "83b51f0fc8ad0c58",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Toutes les propriétés"
+            }
+          },
+          {
+            "id": "41c984951364dc9a",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Exploration aléatoire de voisinage.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Plan de Exploration aléatoire de voisinage"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
+      "bases:Créer une nouvelle base": false,
+      "templater-obsidian:Templater": false
+    }
+  },
+  "active": "16c53d659f4a9642",
+  "lastOpenFiles": [
+    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
+    "20_Logic_and_Method/Method_Visualization.md",
+    "40_Evidence/R_Normalization_Impact.md",
+    "40_Evidence/R_Convergence_Baselines.md",
+    "90_Library/Lit_Last_Iterate_Convergence_Zero_Sum.md",
+    "90_Library/Lit_OGDA_Bilinear_Games.md",
+    "00_The_Pillars/Vault_Usage_Guide.md",
+    "20_Logic_and_Method/Method_Chaos_Metrics.md",
+    "20_Logic_and_Method/Impl_Overflow_Handling.md",
+    "Z_Archive/Sans titre.md",
+    "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
+    "10_Inquiry/Q_Neighborhood_Metrics.md",
+    "10_Inquiry/Q_Understanding_A_delta.md",
+    "20_Logic_and_Method/Implementation_Utils/Impl_Autocomplete_Fix.md",
+    "20_Logic_and_Method/Implementation_Utils/Impl_Testing_Setup.md",
+    "20_Logic_and_Method/Theory_NE_Parameterization.md",
+    "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
+    "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
+    "40_Evidence/R_Convergence_Modes_Comparison.md",
+    "90_Library/Lit_Online_Learning_Orabona.md",
+    "90_Library/Bibliography.md",
+    "10_Inquiry/Q_Random_Exploration.md",
+    "10_Inquiry/Q_Simultaneous_Ill_Conditioning.md",
+    "10_Inquiry/Q_Separation_in_ML_Optimization.md",
+    "99_System/Templates/T_Algorithm_Pseudocode.md",
+    "20_Logic_and_Method/Sans titre.md",
+    "Research_Flow.canvas",
+    "Z_Archive/Sans titre 2.base",
+    "Z_Archive/Sans titre 1.base",
+    "Z_Archive",
+    "99_System/Templates",
+    "99_System",
+    "90_Library",
+    "40_Evidence",
+    "30_Trials",
+    "20_Logic_and_Method/Implementation_Utils",
+    "20_Logic_and_Method"
+  ]
+}
