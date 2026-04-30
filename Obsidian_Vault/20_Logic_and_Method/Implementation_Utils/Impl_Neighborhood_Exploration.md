@@ -1,4 +1,4 @@
-﻿---
+---
 type: Logic
 status: Closed
 related_pillar: "[[Ch3_Methodology]]"

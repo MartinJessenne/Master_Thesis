@@ -4,7 +4,7 @@ use std::f64::EPSILON;
 use enum_dispatch::enum_dispatch;
 use pyo3::{pyclass, Python, pymethods};
 
-use crate::{experiments::GameState, math::{S, V}};
+use crate::{experiments::GameState, math::{S, V, M}};
 
 #[pyclass]
 #[derive(Clone)]
@@ -121,12 +121,13 @@ impl Optimizer {
     }
 }
 
-
 #[enum_dispatch]
 /// The OptimizerStrategy Trait implement the step method that allows, given a mutable reference to a GameState
 /// instance to compute the next step. It only outputs the duality gap of the last step. 
 pub trait OptimizerStrategy {
     fn step(&mut self, state: &mut GameState) -> f64;
+
+    fn reset(&mut self);
 }
 
 impl OptimizerStrategy for Ogda {
@@ -148,6 +149,12 @@ impl OptimizerStrategy for Ogda {
         self.y_hat = y_hat_next;
 
         state.duality_gap(&grad_x, &grad_y)
+    }
+
+    fn reset(&mut self) {
+        let dim = self.x_hat.dim();
+        self.x_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap();
+        self.y_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap()
     }
 }
 
@@ -188,6 +195,13 @@ impl OptimizerStrategy for OmwuOomd {
 
         state.duality_gap(&grad_x, &grad_y)
     }
+
+    fn reset(&mut self) {
+        let dim = self.x_hat.dim();
+        self.x_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap();
+        self.y_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap()
+    }
+
 }
 
 impl OptimizerStrategy for OmwuOftrl {
@@ -218,4 +232,77 @@ impl OptimizerStrategy for OmwuOftrl {
         
         state.duality_gap(&grad_x, &grad_y)        
     }
-}
+
+    fn reset(&mut self) {
+        let dim = self.cumulative_grad_x.dim();
+        self.cumulative_grad_x = V::zeros(dim);
+        self.cumulative_grad_y = V::zeros(dim);
+    }
+    }
+
+    #[cfg(test)]
+    mod tests {
+    use super::*;
+    use crate::math::{S, V};
+    use crate::experiments::GameState;
+    use approx::assert_relative_eq;
+    use ndarray::array;
+
+    #[test]
+    fn test_ogda_reset_identity() {
+        let eta = 0.1;
+        let dim = 2;
+        let opt_new = Ogda::new(eta, dim);
+        let mut opt_reset = Ogda::new(eta, dim);
+
+        // Pollute state (simulating a run by manually modifying hat iterates)
+        opt_reset.x_hat = S::from_projected(array![10.0, -5.0]);
+        opt_reset.y_hat = S::from_projected(array![-2.0, 3.0]);
+        opt_reset.reset();
+
+        // Compare internal fields to ensure reset matches a fresh constructor
+        assert_relative_eq!(opt_new.x_hat.as_array(), opt_reset.x_hat.as_array());
+        assert_relative_eq!(opt_new.y_hat.as_array(), opt_reset.y_hat.as_array());
+    }
+
+    #[test]
+    fn test_omwu_oomd_simplex_invariant() {
+        let eta = 0.1;
+        let dim = 2;
+        let mut opt = OmwuOomd::new(eta, dim);
+
+        // Setup a simple bilinear game matrix
+        let a = array![[0.5, 0.2], [0.1, 0.8]];
+        let mut state = GameState::from_matrix(a);
+
+        // Run multiple steps and verify the strategy always remains a valid probability distribution
+        for _ in 0..100 {
+            opt.step(&mut state);
+
+            // Check normalization (sums to 1.0)
+            assert_relative_eq!(state.x.as_array().sum(), 1.0, epsilon = 1e-12);
+            assert_relative_eq!(state.y.as_array().sum(), 1.0, epsilon = 1e-12);
+
+            // Check non-negativity
+            assert!(state.x.as_array().iter().all(|&v| v >= 0.0));
+            assert!(state.y.as_array().iter().all(|&v| v >= 0.0));
+        }
+    }
+
+    #[test]
+    fn test_omwu_oftrl_reset_clears_memory() {
+        let eta = 0.1;
+        let dim = 2;
+        let mut opt = OmwuOftrl::new(eta, dim);
+
+        // Simulate accumulated history
+        opt.cumulative_grad_x = array![1.0, 2.0];
+        opt.cumulative_grad_y = array![-0.5, 0.5];
+
+        opt.reset();
+
+        // Verify that history is wiped, ensuring the next experiment starts 'forgetful'
+        assert_relative_eq!(opt.cumulative_grad_x.sum(), 0.0);
+        assert_relative_eq!(opt.cumulative_grad_y.sum(), 0.0);
+    }
+    }

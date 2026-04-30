@@ -14,8 +14,14 @@ ENV/
 .vscode/
 .idea/
 
+# Obsidian Vault
+!Obsidian_Vault/
+!Obsidian_Vault/**
+
+
 # Raw External Sources
-Raw/
+!Raw/
+!Raw/**
 
 # --- Python / UV ---
 .venv/
@@ -42,11 +48,7 @@ Thumbs.db
 __marimo__/
 optigame/__marimo__
 
-# Utils
-RawConversion.ipynb
-
 # --- Thesis Specific ---
 # (Ignore large data files if they are >50MB)
 # data/*.csv
 # outputs/plots/*.png
-.gitnexus

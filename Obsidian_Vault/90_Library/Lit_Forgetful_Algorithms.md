@@ -1,4 +1,4 @@
-﻿**Yang Cai**
+**Yang Cai**
 Yale
 yang.cai@yale.edu
 

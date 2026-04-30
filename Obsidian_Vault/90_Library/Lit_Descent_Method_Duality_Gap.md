@@ -1,4 +1,4 @@
-﻿
+
 IMPORTANT: The file content has been truncated.
 Status: Showing lines 1-306 of 306 total lines.
 Action: To read more of the file, you can use the 'start_line' and 'end_line' parameters in a subsequent 'read_file' call. For example, to read the next section of the file, use start_line: 307.

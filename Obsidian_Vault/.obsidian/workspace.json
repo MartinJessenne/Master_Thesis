@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20_Logic_and_Method/Method_Visualization.md",
+                "file": "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Method_Visualization"
+              "title": "Random_Neighborhood_Exploration"
             }
           },
           {
@@ -96,7 +96,7 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "byModifiedTime",
+                "sortOrder": "alphabetical",
                 "autoReveal": true
               },
               "icon": "lucide-folder-closed",
@@ -242,17 +242,23 @@
   },
   "active": "16c53d659f4a9642",
   "lastOpenFiles": [
-    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
-    "20_Logic_and_Method/Method_Visualization.md",
-    "40_Evidence/R_Normalization_Impact.md",
-    "40_Evidence/R_Convergence_Baselines.md",
+    "20_Logic_and_Method/Implementation_Utils/Impl_Neighborhood_Exploration.md",
+    "10_Inquiry/Q_Random_Exploration.md",
+    "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
+    "GEMINI.md",
+    "90_Library/Lit_Online_Learning_Orabona.md",
+    "90_Library/Lit_Descent_Method_Duality_Gap.md",
+    "90_Library/Lit_Forgetful_Algorithms.md",
     "90_Library/Lit_Last_Iterate_Convergence_Zero_Sum.md",
     "90_Library/Lit_OGDA_Bilinear_Games.md",
+    "20_Logic_and_Method/Method_Visualization.md",
+    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
+    "40_Evidence/R_Normalization_Impact.md",
+    "40_Evidence/R_Convergence_Baselines.md",
     "00_The_Pillars/Vault_Usage_Guide.md",
     "20_Logic_and_Method/Method_Chaos_Metrics.md",
     "20_Logic_and_Method/Impl_Overflow_Handling.md",
     "Z_Archive/Sans titre.md",
-    "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
     "10_Inquiry/Q_Neighborhood_Metrics.md",
     "10_Inquiry/Q_Understanding_A_delta.md",
     "20_Logic_and_Method/Implementation_Utils/Impl_Autocomplete_Fix.md",
@@ -261,13 +267,7 @@
     "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
     "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
     "40_Evidence/R_Convergence_Modes_Comparison.md",
-    "90_Library/Lit_Online_Learning_Orabona.md",
     "90_Library/Bibliography.md",
-    "10_Inquiry/Q_Random_Exploration.md",
-    "10_Inquiry/Q_Simultaneous_Ill_Conditioning.md",
-    "10_Inquiry/Q_Separation_in_ML_Optimization.md",
-    "99_System/Templates/T_Algorithm_Pseudocode.md",
-    "20_Logic_and_Method/Sans titre.md",
     "Research_Flow.canvas",
     "Z_Archive/Sans titre 2.base",
     "Z_Archive/Sans titre 1.base",

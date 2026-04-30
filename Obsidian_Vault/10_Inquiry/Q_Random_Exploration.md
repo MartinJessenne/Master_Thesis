@@ -1,4 +1,4 @@
-﻿# Description
+# Description
 Étant donné $A_δ$ pour $δ \in [0,1]$, le but est de générer une matrice de perturbation aléatoire $δ$ afin de prendre $$\text{Omwu}(A_δ + δ)$$
 Ceci pour étudier le comportement de Omwu au voisinage de la matrice pathologique $A_δ$.
 

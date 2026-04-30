@@ -10,7 +10,7 @@ mod optigame {
     
 
     #[pymodule_export]
-    pub use crate::experiments::{GameState, Experiment, neighborhood_exploration};
+    pub use crate::experiments::{GameState, ExperimentRunner, neighborhood_exploration};
 
     #[pymodule_export]
     pub use crate::optimizers::{Ogda, OmwuOftrl, OmwuOomd, Optimizer};
