@@ -93,7 +93,7 @@ def _(iteration_idx, plt, results_OMWU):
         idx = iteration_idx
         x_history = results_OMWU.list_of_results[idx].x_history
         y_history = results_OMWU.list_of_results[idx].y_history
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(6, 6))
         ax.set_title("2D Profile of the strategies")
 
         for x, y in zip(x_history, y_history):
@@ -239,8 +239,8 @@ def _(
 
         # 5. Plot the comparison
         fig, ax = plt.subplots(figsize=(10, 6))
-        ax.plot(dist_user, label="User Setup (A_lambda_gamma)", color="blue")
-        ax.plot(dist_lemma5, label="Lit Setup (Lemma 5)", color="orange")
+        ax.plot(dist_user, label=r"matrix $A_{\lambda,\gamma}$", color="blue")
+        ax.plot(dist_lemma5, label=r"matrix Lemma 5", color="orange")
         ax.set_yscale('log')
         ax.set_xlabel('Time Steps')
         ax.set_ylabel('L2 Distance to NE')
