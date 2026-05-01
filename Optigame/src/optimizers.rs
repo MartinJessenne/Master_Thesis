@@ -2,15 +2,18 @@ use core::f64;
 use std::f64::EPSILON;
 
 use enum_dispatch::enum_dispatch;
-use pyo3::{pyclass, Python, pymethods};
+use pyo3::{Python, pyclass, pymethods};
 
-use crate::{experiments::GameState, math::{S, V, M}};
+use crate::{
+    domain::GameState,
+    math::{S, V},
+};
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Ogda {
     eta: f64,
-    x_hat: S, 
+    x_hat: S,
     y_hat: S,
 }
 
@@ -25,10 +28,7 @@ impl Ogda {
 #[pymethods]
 impl Ogda {
     #[new]
-    pub fn py_new(
-        eta: f64,
-        dim: usize,
-    ) -> Self {
+    pub fn py_new(eta: f64, dim: usize) -> Self {
         let x_hat = S::from_projected(V::zeros(dim));
         let y_hat = S::from_projected(V::zeros(dim));
         Ogda { eta, x_hat, y_hat }
@@ -40,18 +40,14 @@ impl Ogda {
 pub struct OmwuOomd {
     eta: f64,
     x_hat: S,
-    y_hat: S, 
+    y_hat: S,
 }
 
 impl OmwuOomd {
     pub fn new(eta: f64, dim: usize) -> Self {
         let x_hat = S::from_projected(V::zeros(dim));
         let y_hat = S::from_projected(V::zeros(dim));
-        Self {
-            eta,
-            x_hat,
-            y_hat,
-        }
+        Self { eta, x_hat, y_hat }
     }
 }
 
@@ -67,13 +63,17 @@ impl OmwuOomd {
 #[pyclass]
 pub struct OmwuOftrl {
     eta: f64,
-    cumulative_grad_x : V,
-    cumulative_grad_y : V,
+    cumulative_grad_x: V,
+    cumulative_grad_y: V,
 }
 
 impl OmwuOftrl {
     pub fn new(eta: f64, dim: usize) -> Self {
-        OmwuOftrl { eta, cumulative_grad_x: V::zeros(dim), cumulative_grad_y: V::zeros(dim) }
+        OmwuOftrl {
+            eta,
+            cumulative_grad_x: V::zeros(dim),
+            cumulative_grad_y: V::zeros(dim),
+        }
     }
 }
 
@@ -85,53 +85,59 @@ impl OmwuOftrl {
     }
 }
 
-#[pyclass]
 #[enum_dispatch(OptimizerStrategy)]
 #[derive(Clone)]
-pub enum Optimizer {
+pub enum OptimizerEnum {
     Ogda(Ogda),
     OmwuOomd(OmwuOomd),
     OmwuOftrl(OmwuOftrl),
+}
+
+#[pyclass(name = "Optimizer")]
+#[derive(Clone)]
+pub struct Optimizer {
+    pub inner: OptimizerEnum,
 }
 
 #[pymethods]
 impl Optimizer {
     #[staticmethod]
     pub fn ogda(_py: Python<'_>, eta: f64, dim: usize) -> Self {
-        // Instantiate Ogda using its existing constructor
-        // and wraps it in the Optimizer::Ogda variant
         let ogda = Ogda::new(eta, dim);
-        Self::Ogda(ogda)
+        Self { inner: OptimizerEnum::Ogda(ogda) }
     }
 
     #[staticmethod]
     pub fn omwuoomd(_py: Python<'_>, eta: f64, dim: usize) -> Self {
-        // Instantiate OMWU Optimistic Online Mirror Descent using its existing constructor
-        // and wraps it in the Optimizer::OmwuOomd variant
         let omwu = OmwuOomd::new(eta, dim);
-        Self::OmwuOomd(omwu)
+        Self { inner: OptimizerEnum::OmwuOomd(omwu) }
     }
 
     #[staticmethod]
     pub fn omwuoftrl(_py: Python<'_>, eta: f64, dim: usize) -> Self {
-        // Instantiate OMWU Online Follow the Regularized Leader using its existing constructor
-        // and wraps it in the Optimizer::OmwuOftrl variant
         let omwu = OmwuOftrl::new(eta, dim);
-        Self::OmwuOftrl(omwu)
+        Self { inner: OptimizerEnum::OmwuOftrl(omwu) }
     }
 }
 
 #[enum_dispatch]
-/// The OptimizerStrategy Trait implement the step method that allows, given a mutable reference to a GameState
-/// instance to compute the next step. It only outputs the duality gap of the last step. 
 pub trait OptimizerStrategy {
     fn step(&mut self, state: &mut GameState) -> f64;
 
     fn reset(&mut self);
 }
 
-impl OptimizerStrategy for Ogda {
+impl OptimizerStrategy for Optimizer {
+    fn step(&mut self, state: &mut GameState) -> f64 {
+        self.inner.step(state)
+    }
 
+    fn reset(&mut self) {
+        self.inner.reset()
+    }
+}
+
+impl OptimizerStrategy for Ogda {
     fn step(&mut self, state: &mut GameState) -> f64 {
         let (grad_x, grad_y) = state.compute_gradient();
 
@@ -153,8 +159,8 @@ impl OptimizerStrategy for Ogda {
 
     fn reset(&mut self) {
         let dim = self.x_hat.dim();
-        self.x_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap();
-        self.y_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap()
+        self.x_hat = S::build(V::from_elem(dim, 1. / (dim as f64))).unwrap();
+        self.y_hat = S::build(V::from_elem(dim, 1. / (dim as f64))).unwrap()
     }
 }
 
@@ -186,10 +192,10 @@ impl OptimizerStrategy for OmwuOomd {
         x /= x.sum();
         y /= y.sum();
 
-        // Check if they lie on the Simplex 
+        // Check if they lie on the Simplex
         state.x = S::build(x).expect("x doesn't lie on the simplex");
         state.y = S::build(y).expect("y doesn't lie on the simplex");
-        
+
         self.x_hat = S::build(x_hat).expect("x_hat doesn't lie on the simplex");
         self.y_hat = S::build(y_hat).expect("y_hat doesn't lie on the simplex");
 
@@ -198,21 +204,20 @@ impl OptimizerStrategy for OmwuOomd {
 
     fn reset(&mut self) {
         let dim = self.x_hat.dim();
-        self.x_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap();
-        self.y_hat = S::build(V::from_elem(dim, 1./(dim as f64))).unwrap()
+        self.x_hat = S::build(V::from_elem(dim, 1. / (dim as f64))).unwrap();
+        self.y_hat = S::build(V::from_elem(dim, 1. / (dim as f64))).unwrap()
     }
-
 }
 
 impl OptimizerStrategy for OmwuOftrl {
-    fn step(&mut self,state: &mut GameState) -> f64 {
+    fn step(&mut self, state: &mut GameState) -> f64 {
         let (grad_x, grad_y) = state.compute_gradient();
 
         // update the cumulative gradient
         self.cumulative_grad_x = &self.cumulative_grad_x + &grad_x;
         self.cumulative_grad_y = &self.cumulative_grad_y + &grad_y;
 
-        // Add the current gradient again, the optimism part 
+        // Add the current gradient again, the optimism part
         let step_x = -self.eta * (&self.cumulative_grad_x + &grad_x);
         let step_y = -self.eta * (&self.cumulative_grad_y + &grad_y);
 
@@ -226,11 +231,11 @@ impl OptimizerStrategy for OmwuOftrl {
         x /= x.sum();
         y /= y.sum();
 
-        // Check if they lie on the Simplex 
+        // Check if they lie on the Simplex
         state.x = S::build(x).expect("x doesn't lie on the simplex");
         state.y = S::build(y).expect("y doesn't lie on the simplex");
-        
-        state.duality_gap(&grad_x, &grad_y)        
+
+        state.duality_gap(&grad_x, &grad_y)
     }
 
     fn reset(&mut self) {
@@ -238,13 +243,13 @@ impl OptimizerStrategy for OmwuOftrl {
         self.cumulative_grad_x = V::zeros(dim);
         self.cumulative_grad_y = V::zeros(dim);
     }
-    }
+}
 
-    #[cfg(test)]
-    mod tests {
+#[cfg(test)]
+mod tests {
     use super::*;
-    use crate::math::{S, V};
-    use crate::experiments::GameState;
+    use crate::domain::GameState;
+    use crate::math::S;
     use approx::assert_relative_eq;
     use ndarray::array;
 
@@ -305,4 +310,4 @@ impl OptimizerStrategy for OmwuOftrl {
         assert_relative_eq!(opt.cumulative_grad_x.sum(), 0.0);
         assert_relative_eq!(opt.cumulative_grad_y.sum(), 0.0);
     }
-    }
+}

@@ -17,6 +17,22 @@ Une telle approche paraît inutile
 On peut ainsi générer des perturbations aléatoire avec $A_δ + \epsilon U \in B_\infty(A_δ, \epsilon)$ 
 La présentation des résultats est aussi simplifié, on ne présente plus que $\epsilon$ sur l'axe des abscisses et la métrique de duality gap en ordonnée. 
 
+# Étapes
+1. backend sur rust
+2. frontend sur rust
+3. une fois la matrice des vecteurs de chaque explo plotter le tout avec les box & whiskers
+4. analyser
+
+ensuite distance L^2 à l'équilibre de Nash
+1. extraire les stratégies : ffi interface pour obtenir une list of result
+2. créer une fonction python pour accéder aux champs des strats et juste plot la distance L^2
+
+Lemme 5 : 
+1. normalement petite modification mineure, juste copier-coller la fonction, mais en changeant le calcul de A_lambda,gamma en la matrice du lemme 5, faire un ou deux plot trnql et montrer que c'est à peu près pareil sur les courbes paramétrées ou en random
+2. Exposer les problèmes de NaN pour cette méthode
+
+Tout rédiger
+
 # Résultat
 
 

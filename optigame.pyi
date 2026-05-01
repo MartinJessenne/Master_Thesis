@@ -48,7 +48,7 @@ class Optimizer:
         
     # TODO: Ajouter la définition statique pour omwuoftrl
     @staticmethod
-    def omuwoftrl(eta: float, dim: int) -> Optimizer:
+    def omwuoftrl(eta: float, dim: int) -> Optimizer:
         """Instancie OMWU - Optimistic Online Mirror Descent selon la méthode 
         Optismitic Follow the Regularized Leader."""
 
@@ -67,16 +67,16 @@ class Experiment:
         ...
 
 def neighborhood_exploration(
-    p_lambda: npt.NDArray[np.float64], 
-    q_gamma: npt.NDArray[np.float64], 
+    matrices: npt.NDArray[np.float64], 
     optimizer: Optimizer, 
     num_steps: int, 
     normalize_matrix: bool
 ) -> list[GameResult]:
     """
-    Explore le voisinage d'un jeu paramétré par des valeurs de lambda et gamma dans un array numpy de même dimension (num_explorations).
+    Explore un ensemble de jeux définis par une série de matrices 2x2.
+    `matrices` est un array numpy 3D de forme (num_explorations, 2, 2).
     
     Retourne une liste de GameResult contenant les historiques de convergence
-    pour chaque point du voisinage évalué en parallèle par Rust.
+    pour chaque matrice évaluée en parallèle par Rust.
     """
     ...

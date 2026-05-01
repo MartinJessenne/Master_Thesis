@@ -1,4 +1,4 @@
-﻿## Conceptual Logic
+## Conceptual Logic
 
 Pour confirmer ton hypothèse sur la vitesse de convergence Best-Iterate face à un mauvais conditionnement simultané ($M_δ$) par rapport à un mauvais conditionnement simple ($A_δ$), il y a trois étapes fondamentales à accomplir.
 

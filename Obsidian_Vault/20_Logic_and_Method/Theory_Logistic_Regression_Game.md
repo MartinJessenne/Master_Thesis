@@ -1,4 +1,4 @@
-﻿---
+---
 type: Logic
 status: Open
 related_pillar: "[[Ch5_Optimization_Application]]"

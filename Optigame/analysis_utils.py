@@ -5,6 +5,46 @@ from pathlib import Path
 import optigame
 from typing import Callable
 
+def generate_matrices(P_lambdas, Q_gammas, method="A_lambda_gamma"):
+    """
+    Goal: Build a 3D numpy array of shape (len(P_lambdas), 2, 2) containing
+    the game matrices for each lambda/gamma pair.
+    """
+    # 1. Initialize a numpy array `matrices` of zeros with shape (len(P_lambdas), 2, 2)
+    matrices = np.zeros((len(P_lambdas), 2, 2))
+    
+    # 2. Iterate over the length of P_lambdas
+    for i in range(len(P_lambdas)):
+        p = P_lambdas[i]
+        q = Q_gammas[i]
+        
+        if method == "A_lambda_gamma":
+            S = 1
+            a = 1 + S*(1 - p - q)
+            b = 1 - q*S 
+            c = 1 - p*S
+            d = 1
+            matrix= np.array([[a, b], [c, d]], dtype=np.float64)
+            matrices[i] = matrix
+            
+        elif method == "lemma5":
+            # The paper defines NE as x* = (1-delta_x, delta_x). 
+            # Since p is the first component, delta_x = 1 - p.
+            # Similarly, delta_y = 1 - q.
+            delta_x = 1 - p
+            delta_y = 1 - q
+            
+            denom = 1 - delta_x if (1 - delta_x) != 0 else 1e-9
+            # Implement the Lemma 5 matrix formulas
+            a = (1 - delta_y) / denom
+            b = (1 - delta_x - delta_y) / denom
+            c = 0
+            d = 1
+            matrix = np.array([[a, b], [c, d]], dtype=np.float64)
+            matrices[i] = matrix 
+    # 3. Return the `matrices` array
+    return matrices
+
 
 class NeighborhoodExplorationResult:
     """
@@ -22,22 +62,10 @@ def python_neighborhood_exploration(P_lambdas, Q_gammas, Optimizer, num_steps, N
     y = np.array([0,0], dtype=np.float64)
 
     list_of_results = []
-    for (p_lambda, q_gamma) in zip(P_lambdas, Q_gammas):
-        # Reminder: p_lambda and q_gamma are the values of first component of the Nash Equilibrium of
-        # respectively the x player and the y player.
-
-        S = 1
-        a = 1 + S*(1 - p_lambda - q_gamma)
-        b = 1 - q_gamma*S 
-        c = 1 - p_lambda*S
-        d = 1
-        matrix= np.array([[a, b], [c, d]], dtype=np.float64)
-
-        if Normalize_Matrix:
-            m = np.min(matrix)
-            M = np.max(matrix)
-            matrix = (matrix- m) / (M - m)
-
+    
+    # TODO: Refactor loop to use generate_matrices instead of building matrices here
+    matrices = generate_matrices(P_lambdas, Q_gammas)
+    for matrix in matrices:
         g = optigame.GameState(x, y, matrix)
         e = optigame.Experiment(g, Optimizer, num_steps)
         result = e.run_experiment_until_convergence_in_place()
@@ -170,7 +198,6 @@ def full_python_neighborhood_exploration(
 
     return list_of_results
 
-
 def neighborhood_exploration_compute(
     Optimizer: optigame.Optimizer,
     Normalize_Matrix: bool =True,
@@ -179,6 +206,7 @@ def neighborhood_exploration_compute(
     execution_mode: str = 'full_rust',
     number_of_points: int = 500,
     num_steps: int = 10_000,
+    method: str = "A_lambda_gamma"
     ) -> NeighborhoodExplorationResult:
     """
     pass closure arguments like this :
@@ -202,9 +230,10 @@ def neighborhood_exploration_compute(
     P_lambdas = p_transform(x_axis) # First component of theoretical NE for x player
     Q_gammas = q_transform(x_axis) # Second component of theoretical NE for y player
 
-    # Call rust function : parallel_exploration(P_lambdas, Q_gammas, Optimizer, num_steps, Normalize_Matrix=True)
+    # Call rust function
     if execution_mode == 'full_rust':
-        list_of_results = optigame.neighborhood_exploration(P_lambdas, Q_gammas, Optimizer, num_steps, Normalize_Matrix)
+        matrices = generate_matrices(P_lambdas, Q_gammas, method=method)
+        list_of_results = optigame.neighborhood_exploration(matrices, Optimizer, num_steps, Normalize_Matrix)
     elif execution_mode == 'mixed_rust':
         list_of_results = python_neighborhood_exploration(P_lambdas, Q_gammas, Optimizer,num_steps, Normalize_Matrix)
     elif execution_mode == 'python':
