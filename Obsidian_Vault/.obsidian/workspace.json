@@ -8,31 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "16c53d659f4a9642",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Random_Neighborhood_Exploration"
-            }
-          },
-          {
             "id": "b4c20b5f4251ef94",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20_Logic_and_Method/Method_Chaos_Metrics.md",
+                "file": "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Method_Chaos_Metrics"
+              "title": "Lit_Separation_Best_Random_Last_Iterate"
             }
           },
           {
@@ -41,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Problèmes d'overflow.md",
+                "file": "Z_Archive/Retour du 11 mai 2026.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Problèmes d'overflow"
+              "title": "Retour du 11 mai 2026"
             }
           },
           {
@@ -55,29 +41,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Jeu à équilibre arbitraire.md",
+                "file": "20_Logic_and_Method/Theory_NE_Parameterization.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Jeu à équilibre arbitraire"
+              "title": "Theory_NE_Parameterization"
             }
           },
           {
             "id": "5a3e8a1fb348195c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Comparaison baseline théorique.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Comparaison baseline théorique"
+              "title": "Nouvel onglet"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -109,7 +92,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "chaos",
+                "query": "a_delta",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -134,7 +117,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 481.5
+    "width": 481.5,
+    "collapsed": true
   },
   "right": {
     "id": "96880c02a3919fdb",
@@ -240,34 +224,34 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "16c53d659f4a9642",
+  "active": "cf082a086046535e",
   "lastOpenFiles": [
-    "20_Logic_and_Method/Implementation_Utils/Impl_Neighborhood_Exploration.md",
+    "Z_Archive/Convergence in Ill-Conditioned Matrix Games.md",
+    "90_Library/Lit_DeepResearch_The Shift from Ergodic to Iteration-Wise Convergence in Min-Max Optimization and Deep Learning.md",
+    "20_Logic_and_Method/Method_Modular_FFI_Onion_Architecture.md",
+    "20_Logic_and_Method/Method_Zero_Allocation_Numerical_Loops.md",
+    "20_Logic_and_Method/Method_Parallel_Monte_Carlo_Worker_Pool.md",
     "10_Inquiry/Q_Random_Exploration.md",
+    "20_Logic_and_Method/Theory_NE_Parameterization.md",
     "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
+    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
+    "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
+    "20_Logic_and_Method/Method_Chaos_Metrics.md",
+    "20_Logic_and_Method/Implementation_Utils/Impl_Autocomplete_Fix.md",
+    "10_Inquiry/Q_Separation_in_ML_Optimization.md",
+    "10_Inquiry/Q_Simultaneous_Ill_Conditioning.md",
+    "00_The_Pillars/Ch4_Empirical_Study.md",
+    "10_Inquiry/Jeu à équilibre arbitraire.md",
+    "10_Inquiry/Q_Understanding_A_delta.md",
+    "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
+    "2026-04-30.md",
+    "20_Logic_and_Method/Implementation_Utils/Impl_Neighborhood_Exploration.md",
     "GEMINI.md",
     "90_Library/Lit_Online_Learning_Orabona.md",
     "90_Library/Lit_Descent_Method_Duality_Gap.md",
     "90_Library/Lit_Forgetful_Algorithms.md",
     "90_Library/Lit_Last_Iterate_Convergence_Zero_Sum.md",
     "90_Library/Lit_OGDA_Bilinear_Games.md",
-    "20_Logic_and_Method/Method_Visualization.md",
-    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
-    "40_Evidence/R_Normalization_Impact.md",
-    "40_Evidence/R_Convergence_Baselines.md",
-    "00_The_Pillars/Vault_Usage_Guide.md",
-    "20_Logic_and_Method/Method_Chaos_Metrics.md",
-    "20_Logic_and_Method/Impl_Overflow_Handling.md",
-    "Z_Archive/Sans titre.md",
-    "10_Inquiry/Q_Neighborhood_Metrics.md",
-    "10_Inquiry/Q_Understanding_A_delta.md",
-    "20_Logic_and_Method/Implementation_Utils/Impl_Autocomplete_Fix.md",
-    "20_Logic_and_Method/Implementation_Utils/Impl_Testing_Setup.md",
-    "20_Logic_and_Method/Theory_NE_Parameterization.md",
-    "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
-    "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
-    "40_Evidence/R_Convergence_Modes_Comparison.md",
-    "90_Library/Bibliography.md",
     "Research_Flow.canvas",
     "Z_Archive/Sans titre 2.base",
     "Z_Archive/Sans titre 1.base",

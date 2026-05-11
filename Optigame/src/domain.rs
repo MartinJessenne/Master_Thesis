@@ -1,6 +1,6 @@
 use crate::math::{M, S, V};
 use crate::optimizers::{Optimizer, OptimizerStrategy};
-use ndarray::Array2;
+use ndarray::{Array2, ArrayView1, ArrayView2};
 use pyo3::pyclass;
 
 #[pyclass]
@@ -36,13 +36,13 @@ impl GameState {
         &self.y
     }
 
-    pub fn a(&self) -> &M {
-        &self.a
+    pub fn a<'a>(&'a self) -> ArrayView2<'a, f64> {
+        self.a.view()
     }
 
     pub fn compute_gradient(&self) -> (V, V) {
-        let grad_x: V = self.a.dot(self.y.as_array());
-        let grad_y: V = -self.a.t().dot(self.x.as_array());
+        let grad_x: V = self.a.dot(&self.y.view());
+        let grad_y: V = -self.a.t().dot(&self.x.view());
         (grad_x, grad_y)
     }
 
@@ -61,16 +61,16 @@ pub struct GameResult {
 }
 
 impl GameResult {
-    pub fn x_history(&self) -> &M {
-        &self.x_history
+    pub fn x_history<'a>(&'a self) -> ArrayView2<'a, f64> {
+        self.x_history.view()
     }
 
-    pub fn y_history(&self) -> &M {
-        &self.y_history
+    pub fn y_history<'a>(&'a self) -> ArrayView2<'a, f64> {
+        self.y_history.view()
     }
 
-    pub fn gaps(&self) -> &V {
-        &self.gaps_history
+    pub fn gaps<'a>(&'a self) -> ArrayView1<'a, f64> {
+        self.gaps_history.view()
     }
 }
 
@@ -94,8 +94,8 @@ impl Experiment {
         for i in 0..self.num_steps {
             let gap = optimizer.step(state);
 
-            x_history.row_mut(i).assign(state.x.as_array());
-            y_history.row_mut(i).assign(state.y.as_array());
+            x_history.row_mut(i).assign(&state.x.view());
+            y_history.row_mut(i).assign(&state.y.view());
             gaps_history[i] = gap;
         }
         GameResult {
@@ -119,8 +119,8 @@ impl Experiment {
         for i in 0..self.num_steps {
             let gap = optimizer.step(state);
 
-            x_history.row_mut(i).assign(state.x.as_array());
-            y_history.row_mut(i).assign(state.y.as_array());
+            x_history.row_mut(i).assign(&state.x.view());
+            y_history.row_mut(i).assign(&state.y.view());
             gaps_history[i] = gap;
 
             if gap < 10e-9 {

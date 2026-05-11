@@ -1,10 +1,10 @@
 use crate::domain::{Experiment, GameResult, GameState};
-use crate::experiments::{self, random_exploration};
+use crate::experiments::{self, Hyperparams, Params, random_exploration};
 use crate::math::S;
 use crate::optimizers::Optimizer;
 use ndarray::array;
 use numpy::{PyArray1, PyArray2, PyArrayMethods, ToPyArray};
-use pyo3::{Bound, Py, Python, pyclass, pyfunction, pymethods};
+use pyo3::{Bound, Py, PyResult, Python, pyclass, pyfunction, pymethods};
 use rayon::prelude::*;
 use std::ops::DerefMut;
 
@@ -127,16 +127,13 @@ pub fn py_random_neighborhood_exploration(
 ) -> Vec<GameResult> {
     let a_base = a_delta.as_array();
 
-    experiments::random_neighborhood_exploration(
-        a_base,
-        epsilon,
-        optimizer,
-        num_exploration,
-        num_steps,
-    )
+    let params = Params::new(num_exploration, num_steps);
+
+    experiments::random_neighborhood_exploration(a_base, epsilon, optimizer, params)
 }
 
 #[pyfunction(name = "random_exploration")]
+#[pyo3(signature = (a_delta, vec_epsilon, optimizer, num_exploration, num_steps, method, cutoff = 0.1))]
 pub fn py_random_exploration<'py>(
     py: Python<'py>,
     a_delta: numpy::PyReadonlyArray2<f64>,
@@ -145,18 +142,16 @@ pub fn py_random_exploration<'py>(
     num_exploration: usize,
     num_steps: usize,
     method: &str,
-) -> Bound<'py, numpy::PyArray2<f64>> {
+    cutoff: f64,
+) -> PyResult<Bound<'py, numpy::PyArray2<f64>>> {
+    // Ask : Is the separation of concerned even respected here? Because we could argue that this function's body is only converting the python inputs into rust and then launching the experiment
     let vec_epsilon = vec_epsilon.as_array();
     let a_delta = a_delta.as_array();
 
-    let result = random_exploration(
-        a_delta,
-        vec_epsilon,
-        optimizer,
-        num_exploration,
-        num_steps,
-        method,
-    );
+    let hparams = Hyperparams::try_from_raw(num_exploration, num_steps, method, cutoff)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
 
-    result.to_pyarray(py)
+    let result = random_exploration(a_delta, vec_epsilon, optimizer, hparams);
+
+    Ok(result.to_pyarray(py))
 }

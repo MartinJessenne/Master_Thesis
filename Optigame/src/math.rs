@@ -1,4 +1,4 @@
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ArrayView1};
 
 pub type V = Array1<f64>;
 pub type M = Array2<f64>;
@@ -33,8 +33,8 @@ impl S {
     }
 
     // Retrieve the underlying array for math operations
-    pub fn as_array(&self) -> &V {
-        &self.inner
+    pub fn view<'a>(&'a self) -> ArrayView1<'a, f64> {
+        self.inner.view()
     }
 
     pub fn into_inner(self) -> V {

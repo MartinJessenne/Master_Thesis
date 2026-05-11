@@ -104,19 +104,25 @@ impl Optimizer {
     #[staticmethod]
     pub fn ogda(_py: Python<'_>, eta: f64, dim: usize) -> Self {
         let ogda = Ogda::new(eta, dim);
-        Self { inner: OptimizerEnum::Ogda(ogda) }
+        Self {
+            inner: OptimizerEnum::Ogda(ogda),
+        }
     }
 
     #[staticmethod]
     pub fn omwuoomd(_py: Python<'_>, eta: f64, dim: usize) -> Self {
         let omwu = OmwuOomd::new(eta, dim);
-        Self { inner: OptimizerEnum::OmwuOomd(omwu) }
+        Self {
+            inner: OptimizerEnum::OmwuOomd(omwu),
+        }
     }
 
     #[staticmethod]
     pub fn omwuoftrl(_py: Python<'_>, eta: f64, dim: usize) -> Self {
         let omwu = OmwuOftrl::new(eta, dim);
-        Self { inner: OptimizerEnum::OmwuOftrl(omwu) }
+        Self {
+            inner: OptimizerEnum::OmwuOftrl(omwu),
+        }
     }
 }
 
@@ -175,13 +181,16 @@ impl OptimizerStrategy for OmwuOomd {
         let max_step_y = step_y.iter().fold(f64::NEG_INFINITY, |a: f64, &b| a.max(b));
 
         // Multiplicative update of \hat{x} and \hat{y}
-        let mut x_hat = self.x_hat.as_array() * step_x.map(|&s| f64::exp(s - max_step_x));
-        let mut y_hat = self.y_hat.as_array() * step_y.map(|&s| f64::exp(s - max_step_y));
+        let mut x_hat = step_x.map(|&s| f64::exp(s - max_step_x));
+        let mut y_hat = step_y.map(|&s| f64::exp(s - max_step_y));
+
+        x_hat *= &self.x_hat.view();
+        y_hat *= &self.y_hat.view();
 
         x_hat.mapv_inplace(|v| v + EPSILON);
         y_hat.mapv_inplace(|v| v + EPSILON);
 
-        // Normalisation de \hat{x} et \hat{y}
+        // Normalizing \hat{x} and \hat{y}
         x_hat /= x_hat.sum();
         y_hat /= y_hat.sum();
 
@@ -266,8 +275,8 @@ mod tests {
         opt_reset.reset();
 
         // Compare internal fields to ensure reset matches a fresh constructor
-        assert_relative_eq!(opt_new.x_hat.as_array(), opt_reset.x_hat.as_array());
-        assert_relative_eq!(opt_new.y_hat.as_array(), opt_reset.y_hat.as_array());
+        assert_relative_eq!(opt_new.x_hat.view(), opt_reset.x_hat.view());
+        assert_relative_eq!(opt_new.y_hat.view(), opt_reset.y_hat.view());
     }
 
     #[test]
@@ -285,12 +294,12 @@ mod tests {
             opt.step(&mut state);
 
             // Check normalization (sums to 1.0)
-            assert_relative_eq!(state.x.as_array().sum(), 1.0, epsilon = 1e-12);
-            assert_relative_eq!(state.y.as_array().sum(), 1.0, epsilon = 1e-12);
+            assert_relative_eq!(state.x.view().sum(), 1.0, epsilon = 1e-12);
+            assert_relative_eq!(state.y.view().sum(), 1.0, epsilon = 1e-12);
 
             // Check non-negativity
-            assert!(state.x.as_array().iter().all(|&v| v >= 0.0));
-            assert!(state.y.as_array().iter().all(|&v| v >= 0.0));
+            assert!(state.x.view().iter().all(|&v| v >= 0.0));
+            assert!(state.y.view().iter().all(|&v| v >= 0.0));
         }
     }
 

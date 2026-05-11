@@ -50,3 +50,6 @@ RawConversion.ipynb
 # data/*.csv
 # outputs/plots/*.png
 .gitnexus
+
+# Gemini
+.gemini
