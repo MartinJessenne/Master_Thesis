@@ -5,7 +5,7 @@ use enum_dispatch::enum_dispatch;
 use pyo3::{Python, pyclass, pymethods};
 
 use crate::{
-    domain::GameState,
+    domain::structure::GameState,
     math::{S, V},
 };
 
@@ -257,7 +257,7 @@ impl OptimizerStrategy for OmwuOftrl {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::GameState;
+    use crate::domain::structure::GameState;
     use crate::math::S;
     use approx::assert_relative_eq;
     use ndarray::array;

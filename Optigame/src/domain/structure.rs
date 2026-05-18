@@ -1,5 +1,5 @@
 use crate::math::{M, S, V};
-use crate::optimizers::{Optimizer, OptimizerStrategy};
+use crate::optimizers::core::{Optimizer, OptimizerStrategy};
 use ndarray::{Array2, ArrayView1, ArrayView2};
 use pyo3::pyclass;
 

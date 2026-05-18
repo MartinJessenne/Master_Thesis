@@ -4,7 +4,10 @@ status: Active
 related_pillar: "[[Thesis_Master_Plan]]"
 tags: [thesis, master_index, dashboard]
 ---
-# ðŸ“Š Thesis Master Dashboard
+# 📊 Thesis Master Dashboard
+
+> [!important] Sprint Final
+> Voir le [[Final_Sprint_Dashboard]] pour le planning (Gantt) et les To-Dos jusqu'au 21 mai.
 
 This dashboard uses **Dataview** (if installed) to provide a live view of your Research DAG.
 

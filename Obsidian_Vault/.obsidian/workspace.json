@@ -36,17 +36,31 @@
             }
           },
           {
+            "id": "91968e3ff03c7abe",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "00_The_Pillars/Final_Sprint_Dashboard.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Final_Sprint_Dashboard"
+            }
+          },
+          {
             "id": "c95c5c24dbfe97a6",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20_Logic_and_Method/Theory_NE_Parameterization.md",
+                "file": "20_Logic_and_Method/Parametric Curves Optimization.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Theory_NE_Parameterization"
+              "title": "Parametric Curves Optimization"
             }
           },
           {
@@ -60,7 +74,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -117,8 +131,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 481.5,
-    "collapsed": true
+    "width": 400.5
   },
   "right": {
     "id": "96880c02a3919fdb",
@@ -221,18 +234,36 @@
       "templates:Insérer le modèle": false,
       "command-palette:Ouvrir la palette de commandes": false,
       "bases:Créer une nouvelle base": false,
-      "templater-obsidian:Templater": false
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "cf082a086046535e",
+  "active": "c95c5c24dbfe97a6",
   "lastOpenFiles": [
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization_2.png",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization_1.png",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization.png",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/file-20260518124311530.png",
+    "20_Logic_and_Method/Parametric Curves Optimization.md",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/file.png",
+    "20_Logic_and_Method/_attachments",
+    "20_Logic_and_Method/200_Attachments",
+    "20_Logic_and_Method/Total Variation Study.md",
+    "20_Logic_and_Method/Theory_NE_Parameterization.md",
+    "00_The_Pillars/Sans titre.md",
+    "00_The_Pillars/Final_Sprint_Dashboard.md",
+    "00_The_Pillars/Ch5_Optimization_Application.md",
+    "20_Logic_and_Method/Concentric exploration.md",
+    "Excalidraw/Concentric_Exploration_Design.md",
+    "Excalidraw",
+    "Z_Archive/Retour du 11 mai 2026.md",
     "Z_Archive/Convergence in Ill-Conditioned Matrix Games.md",
     "90_Library/Lit_DeepResearch_The Shift from Ergodic to Iteration-Wise Convergence in Min-Max Optimization and Deep Learning.md",
     "20_Logic_and_Method/Method_Modular_FFI_Onion_Architecture.md",
     "20_Logic_and_Method/Method_Zero_Allocation_Numerical_Loops.md",
     "20_Logic_and_Method/Method_Parallel_Monte_Carlo_Worker_Pool.md",
     "10_Inquiry/Q_Random_Exploration.md",
-    "20_Logic_and_Method/Theory_NE_Parameterization.md",
     "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
     "20_Logic_and_Method/Theory_Matrix_Normalization.md",
     "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
@@ -243,25 +274,12 @@
     "00_The_Pillars/Ch4_Empirical_Study.md",
     "10_Inquiry/Jeu à équilibre arbitraire.md",
     "10_Inquiry/Q_Understanding_A_delta.md",
-    "20_Logic_and_Method/Random_Neighborhood_Exploration.md",
-    "2026-04-30.md",
-    "20_Logic_and_Method/Implementation_Utils/Impl_Neighborhood_Exploration.md",
-    "GEMINI.md",
-    "90_Library/Lit_Online_Learning_Orabona.md",
-    "90_Library/Lit_Descent_Method_Duality_Gap.md",
-    "90_Library/Lit_Forgetful_Algorithms.md",
-    "90_Library/Lit_Last_Iterate_Convergence_Zero_Sum.md",
-    "90_Library/Lit_OGDA_Bilinear_Games.md",
     "Research_Flow.canvas",
     "Z_Archive/Sans titre 2.base",
     "Z_Archive/Sans titre 1.base",
     "Z_Archive",
     "99_System/Templates",
     "99_System",
-    "90_Library",
-    "40_Evidence",
-    "30_Trials",
-    "20_Logic_and_Method/Implementation_Utils",
-    "20_Logic_and_Method"
+    "90_Library"
   ]
 }

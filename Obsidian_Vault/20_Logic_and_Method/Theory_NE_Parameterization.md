@@ -1,4 +1,4 @@
-﻿# Description
+# Description
 Le but ici est d'étudier la dynamique de convergence d'OMWU selon l'équilibre de Nash vers lequel il est censé converger. 
 
 # Résultats Attendus

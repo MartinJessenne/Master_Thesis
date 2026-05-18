@@ -1,10 +1,9 @@
-use crate::domain::{Experiment, GameResult, GameState};
-use crate::experiments::{self, Hyperparams, Params, random_exploration};
+use crate::domain::structure::{Experiment, GameResult, GameState};
 use crate::math::S;
-use crate::optimizers::Optimizer;
+use crate::optimizers::core::Optimizer;
 use ndarray::array;
 use numpy::{PyArray1, PyArray2, PyArrayMethods, ToPyArray};
-use pyo3::{Bound, Py, PyResult, Python, pyclass, pyfunction, pymethods};
+use pyo3::{Bound, Py, Python, pyclass, pyfunction, pymethods};
 use rayon::prelude::*;
 use std::ops::DerefMut;
 
@@ -80,21 +79,14 @@ pub fn neighborhood_exploration(
     num_steps: usize,
     normalize_matrix: bool,
 ) -> Vec<GameResult> {
-    // TODO: Refactor body to iterate over the 3D matrices array
-    // 1. Convert the PyReadonlyArray3 to a Rust ArrayView3
     let matrices_view = matrices.as_array();
 
-    // 2. Iterate over the matrices in parallel.
-    // API Note: `.outer_iter()` yields a sequence of 2D views (ArrayView2),
-    // which represent your individual 2x2 matrices.
     matrices_view
         .outer_iter()
         .into_par_iter()
         .map(|matrix_view| {
-            // 3. Convert the 2D view into an owned Array2 so you can mutate it
             let mut matrix = matrix_view.to_owned();
 
-            // 4. Implement the normalization logic here (same as before)
             if normalize_matrix {
                 let max_component = matrix
                     .iter()
@@ -104,11 +96,9 @@ pub fn neighborhood_exploration(
                 matrix = (matrix - min_component) / (max_component - min_component);
             }
 
-            // 5. Initialize GameState and Experiment, and run
             let x = S::build(array![0.5, 0.5]).unwrap();
             let y = S::build(array![0.5, 0.5]).unwrap();
             let mut game_state = GameState { x, y, a: matrix };
-            // ...
 
             let experiment = Experiment::new(num_steps);
             let mut optimizer = optimizer.clone();
@@ -117,41 +107,6 @@ pub fn neighborhood_exploration(
         .collect()
 }
 
-#[pyfunction(name = "random_neighborhood_exploration")]
-pub fn py_random_neighborhood_exploration(
-    a_delta: numpy::PyReadonlyArray2<f64>,
-    epsilon: f64,
-    optimizer: Optimizer,
-    num_exploration: usize,
-    num_steps: usize,
-) -> Vec<GameResult> {
-    let a_base = a_delta.as_array();
-
-    let params = Params::new(num_exploration, num_steps);
-
-    experiments::random_neighborhood_exploration(a_base, epsilon, optimizer, params)
-}
-
-#[pyfunction(name = "random_exploration")]
-#[pyo3(signature = (a_delta, vec_epsilon, optimizer, num_exploration, num_steps, method, cutoff = 0.1))]
-pub fn py_random_exploration<'py>(
-    py: Python<'py>,
-    a_delta: numpy::PyReadonlyArray2<f64>,
-    vec_epsilon: numpy::PyReadonlyArray1<f64>,
-    optimizer: Optimizer,
-    num_exploration: usize,
-    num_steps: usize,
-    method: &str,
-    cutoff: f64,
-) -> PyResult<Bound<'py, numpy::PyArray2<f64>>> {
-    // Ask : Is the separation of concerned even respected here? Because we could argue that this function's body is only converting the python inputs into rust and then launching the experiment
-    let vec_epsilon = vec_epsilon.as_array();
-    let a_delta = a_delta.as_array();
-
-    let hparams = Hyperparams::try_from_raw(num_exploration, num_steps, method, cutoff)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
-
-    let result = random_exploration(a_delta, vec_epsilon, optimizer, hparams);
-
-    Ok(result.to_pyarray(py))
-}
+// NOTE: py_random_neighborhood_exploration and py_random_exploration need to be updated 
+// to match the new random_neighborhood_exploration signature and ExplorationOutput.
+// This might require exposing more types to Python or zipping the output back into numpy arrays.

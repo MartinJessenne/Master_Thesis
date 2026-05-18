@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
 
+pub mod common;
 pub mod domain;
 pub mod experiments;
 pub mod ffi;
@@ -10,14 +11,13 @@ pub mod optimizers;
 #[pymodule]
 mod optigame {
     #[pymodule_export]
-    pub use crate::domain::{GameResult, GameState};
+    pub use crate::domain::structure::{GameResult, GameState};
 
     #[pymodule_export]
     pub use crate::ffi::{
-        neighborhood_exploration, py_random_exploration, py_random_neighborhood_exploration,
-        PyExperiment as Experiment,
+        neighborhood_exploration, PyExperiment as Experiment,
     };
 
     #[pymodule_export]
-    pub use crate::optimizers::{Ogda, OmwuOftrl, OmwuOomd, Optimizer};
+    pub use crate::optimizers::core::{Ogda, OmwuOftrl, OmwuOomd, Optimizer};
 }
