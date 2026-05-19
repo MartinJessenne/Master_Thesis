@@ -114,23 +114,36 @@ impl Experiment {
         let dim = state.x.len();
         let mut x_history = Array2::<f64>::zeros((num_steps, dim));
         let mut y_history = Array2::<f64>::zeros((num_steps, dim));
-
         let mut gaps_history: V = V::zeros(num_steps);
-        for i in 0..self.num_steps {
-            let gap = optimizer.step(state);
 
+        let mut converged_at = num_steps;
+
+        for i in 0..num_steps {
+            // Record current state BEFORE taking the step
             x_history.row_mut(i).assign(&state.x.view());
             y_history.row_mut(i).assign(&state.y.view());
+
+            let gap = optimizer.step(state);
             gaps_history[i] = gap;
 
             if gap < 10e-9 {
-                return GameResult {
-                    x_history,
-                    y_history,
-                    gaps_history,
-                };
+                converged_at = i + 1;
+                break;
             }
         }
+
+        // If we converged early, fill the rest of the history with the last recorded state
+        // to avoid (0,0) points in downstream plotting.
+        if converged_at < num_steps {
+            let last_x = x_history.row(converged_at - 1).to_owned();
+            let last_y = y_history.row(converged_at - 1).to_owned();
+            for j in converged_at..num_steps {
+                x_history.row_mut(j).assign(&last_x);
+                y_history.row_mut(j).assign(&last_y);
+                gaps_history[j] = gaps_history[converged_at - 1];
+            }
+        }
+
         GameResult {
             x_history,
             y_history,

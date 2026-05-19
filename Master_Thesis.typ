@@ -252,7 +252,7 @@ To analyze the behavioral dynamics of the algorithms, we evaluate the evolution 
     image("images/Ogda_Last_xo_vs_ne.png", width: 100%),
     image("images/Omwu_last_it_vs_ne.png", width: 100%),
   ),
-  caption: [Evolution of computed last-iterate strategies against theoretical Nash Equilibrium probabilities for OGDA (left) and OMWU (right).]
+  caption: [Evolution of computed last-iterate strategies against theoretical Nash Equilibrium probabilities for OGDA (top) and OMWU (bottom).]
 )
 ]
 

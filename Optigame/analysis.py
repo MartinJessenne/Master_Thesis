@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.3"
+__generated_with = "0.23.6"
 app = marimo.App(width="medium")
 
 
@@ -15,6 +15,7 @@ def _():
     import optigame
 
     return (
+        Path,
         mo,
         neighborhood_exploration_compute,
         neighborhood_exploration_plot,
@@ -57,64 +58,147 @@ def _(
     optigame,
 ):
     Ogda = optigame.Optimizer.ogda(0.1, 2)
-    results_OGDA = neighborhood_exploration_compute(Ogda)
+
+    # For this one, we're going to approach the Nash Equilibrium this way : starting from (0.5, 0.5) (Should converge instantly, since x and y are initialized at (0.5, 0.5))
+    # going to (0, 0.5) (which is A_\delta's Nash Equilibrium) in a straight line. 
+    def make_p(a, b):
+        """
+        This function takes as input a, b,
+        and returns a function p_fn that takes as input x ranging [0, 1] and returns the values of the Nash Equilibrium for point x^*_0 = a*x + b, 
+        for this specific iteration. 
+
+        Here we want to test a line between (0.5, 0.5) and (0, 0.5), so we want to test p_fn(x) = -0.5*x +0.5, with x going from 0 to 1. 
+        """
+        def p_fn(x):
+            return a * x + b
+        return p_fn
+
+    def make_q(a, b):
+        """
+        This function takes as input a, b,
+        and returns a function q_fn that takes as input x ranging [0, 1] and returns the values of the Nash Equilibrium for point y^*_0 = a*x + b, 
+        for this specific iteration. 
+
+        Here we want to test a line between (0.5, 0.5) and (0, 0.5), so we want to test q_fn(x) = 0*x + 0.5, with x going from 0 to 1.
+        """
+        def q_fn(x):
+            return a * x + b
+        return q_fn
+
+    results_OGDA = neighborhood_exploration_compute(Ogda, p_transform = make_p(-0.5, 0.5), q_transform = make_q(0, 0.5), number_of_points=100, num_steps=10000)
     neighborhood_exploration_plot(results_OGDA)
-    return
+    return make_p, make_q
 
 
 @app.cell
 def _(
+    make_p,
+    make_q,
     neighborhood_exploration_compute,
     neighborhood_exploration_plot,
     optigame,
 ):
     OMWU = optigame.Optimizer.omwuoomd(0.1, 2)
-    results_OMWU = neighborhood_exploration_compute(OMWU, number_of_points=500, num_steps=10_000)
-    neighborhood_exploration_plot(results_OMWU)
+    results_OMWU = neighborhood_exploration_compute(OMWU, p_transform=make_p(-0.5, 0.5), q_transform=make_q(0, 0.5), number_of_points=500, num_steps=10_000)
+    neighborhood_exploration_plot(results_OMWU, metric_type="total_var")
     return (results_OMWU,)
 
 
 @app.cell
 def _(mo, results_OMWU):
-    iteration_idx = mo.ui.slider(0, len(results_OMWU.list_of_results),1)
+    iteration_idx = mo.ui.slider(0, len(results_OMWU.list_of_results),1, value=250)
     iteration_idx
     return (iteration_idx,)
 
 
 @app.cell
-def _(iteration_idx):
-    print(type(iteration_idx))
-    return
-
-
-@app.cell
-def _(iteration_idx, plt, results_OMWU):
-    def plot_2d_profile(results_OMWU, iteration_idx):
-        idx = iteration_idx
-        x_history = results_OMWU.list_of_results[idx].x_history
-        y_history = results_OMWU.list_of_results[idx].y_history
-        fig, ax = plt.subplots(figsize=(6, 6))
+def _(iteration_idx, make_p, make_q, np, plt, results_OMWU):
+    def plot_2d_profile(results_OMWU, idx, ax):
+        result = results_OMWU.list_of_results[idx]
+        x_history = result.x_history
+        y_history = result.y_history
         ax.set_title("2D Profile of the strategies")
+        x_axis = np.linspace(0, 1, len(results_OMWU.list_of_results))
+        (x_0_star, y_0_star) = make_p(-0.5, 0.5)(x_axis[idx]), make_q(0, 0.5)(x_axis[idx])
 
-        for x, y in zip(x_history, y_history):
-            ax.plot(x[1], y[1], '*', color='blue', alpha=0.5)
+        # Vectorized plotting
+        ax.plot(x_history[:, 0], y_history[:, 0], '*', color='blue', alpha=0.5, label='Strategy Trajectory')
 
-        ax.set_xlabel("Player x Strategy")
-        ax.set_ylabel("Player y Strategy")
-        plt.show()
-    plot_2d_profile(results_OMWU, iteration_idx.value)
-    return
+        # Plot markers once outside the loop
+        ax.plot(0.5, 0.5, 'X', color='red', markersize=10, label='Starting Point')
+        ax.plot(x_0_star, y_0_star, 'o', markersize=10, label='Nash Equilibrium', color='green')
+
+        ax.set_xlabel("First Component of Player x Strategy")
+        ax.set_ylabel("First Component of Player y Strategy")
+        ax.legend()
+
+    def plot_duality_gap_history(results_OMWU, idx, ax):
+        result = results_OMWU.list_of_results[idx]
+        duality_gap_history = result.gaps_history
+        ax.plot(duality_gap_history, color='purple')
+        ax.set_title("Duality Gap History")
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Duality Gap")
+        ax.set_yscale('log')
+        ax.grid(True, which="both", ls="--", linewidth=0.5)
+
+    def plot_cumulative_total_var_history(results_OMWU, idx, ax):
+        gaps_history = results_OMWU.list_of_results[idx].gaps_history
+
+        cumulative_total_var_history = np.cumsum(np.abs(np.diff(gaps_history)))
+        ax.plot(cumulative_total_var_history, color='orange')
+        ax.set_title("Cumulative Total Variation")
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Cumulative Total Variation")
+        ax.set_yscale('log')
+        ax.grid(True, which="both", ls="--", linewidth=0.5)
+
+    def iteration_wise_study(results_OMWU, idx):
+        # create the canvas : 
+        fig, axes = plt.subplot_mosaic([['2d_profile', 'duality_gap'],
+                                       ['2d_profile', 'cumulative_total_var']],
+                                      gridspec_kw={'width_ratios': [1, 1], 
+                                      'height_ratios': [1, 1]}, figsize=(12, 8), constrained_layout=True)
+        # plot the 2d profile :
+        plot_2d_profile(results_OMWU, idx, axes['2d_profile'])
+
+        # plot the duality gap :
+        plot_duality_gap_history(results_OMWU, idx, axes['duality_gap'])
+
+        # plot the cumulative total variation :
+        plot_cumulative_total_var_history(results_OMWU, idx, axes['cumulative_total_var'])
+
+        return fig
+
+    fig = iteration_wise_study(results_OMWU, iteration_idx.value)
+    fig
+    return (plot_2d_profile,)
 
 
 @app.cell
-def _(results_OMWU):
-    print(type(results_OMWU))
-    return
+def _(Path, plot_2d_profile, plt, results_OMWU):
+    from matplotlib.pylab import f
+
+    def batch_save_2d_profiles(results, indices, output_dir= "../images/2d_profiles", file_format="svg"):
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        for idx in indices:
+            fig, ax = plt.subplots(figsize=(6, 6))
+            plot_2d_profile(results, idx, ax)
+            filename = f"2d_profile_{idx:03d}.{file_format}"
+            save_path = output_path / filename
+            fig.savefig(save_path, format=file_format)
+            plt.close(fig)  # Close the figure to free memory
+
+    # Example usage: Save 20 profiles, step_size = len(results_OMWU.list_of_results) // 20 = 500
+    step_size = len(results_OMWU.list_of_results) // 20
 
 
-@app.cell
-def _(iteration_idx):
-    print(type(iteration_idx))
+    SAVE_BATCH = False
+
+    if SAVE_BATCH:
+        batch_save_2d_profiles(results_OMWU, indices=range(0, len(results_OMWU.list_of_results), step_size))
     return
 
 
@@ -134,7 +218,7 @@ def _(iteration_idx, np, plt, results_OMWU):
         # 3. Create a list or numpy array of the 2D points [x[1], y[1]] across all time steps
         # Note: Depending on how x_history is structured, you might need a list comprehension
         # points_2d = [ ... extract relevant indices ... ]
-        points_2d = np.array([[x[1], y[1]] for x, y in zip(x_hist, y_hist)])
+        points_2d = np.array([x_hist[:,1], y_hist[:,1]]).T
 
         # 4. Define the target Nash Equilibrium point as a numpy array
         # ne_point = ...
@@ -170,27 +254,38 @@ def _(iteration_idx, np, plt, results_OMWU):
 def _(np, optigame):
     delta = 0.1
     A_delta = np.array([[1/2+ delta, 1/2],[0,1]])
-    vec_epsilon = np.linspace(0.01, 0.1, 10)
     opt = optigame.Optimizer.omwuoomd(0.1, 2)
-    matrix_results = optigame.random_exploration(A_delta, vec_epsilon, opt, num_exploration=1000, num_steps=10_000, method="max_last_10")
-    return matrix_results, vec_epsilon
+    metric_method = "total_var"
+
+    output = optigame.concentric_exploration(
+        a_delta=A_delta,
+        optimizer=opt,
+        num_exploration=1000,
+        num_steps=10_000,
+        inner_radius=0.0,
+        outer_radius=0.1,
+        num_slices=5,
+        metric_method=metric_method,
+    )
+
+    matrix_results = output.metrics
+    # We use the upper bound of each slice as the epsilon for plotting
+    vec_epsilon = output.slice_boundaries[:, 1]
+    return A_delta, matrix_results, metric_method, opt, vec_epsilon
 
 
 @app.cell
-def _(matrix_results, plt, ticker, vec_epsilon):
+def _(matrix_results, metric_method, plt, ticker, vec_epsilon):
     def plot_box_and_whiskers(matrix_results, vec_epsilon):
         # 1. Create a matplotlib figure and axis
         fig, ax = plt.subplots(figsize=(10, 6))
         # 2. Plot the box and whiskers distribution
-        # Hint: ax.boxplot expects data where each *column* represents a distribution.
-        # Your matrix_results has shape (num_epsilons, num_explorations). You must transpose it.
-        # Hint 2: Use the 'positions' argument to place the boxes at the correct epsilon values on the X-axis.
         ax.boxplot(matrix_results.T, positions=vec_epsilon, widths=0.005, manage_ticks=True)
 
         # 3. Format the plot (labels, title)
         ax.set_xlabel('Epsilon')
-        ax.set_ylabel('Max Last 10 Iterations')
-        ax.set_title('Distribution of Max Last 10 Iterations Across Epsilon Values')
+        ax.set_ylabel(f'{metric_method.replace("_", " ").title()}')
+        ax.set_title(f'Distribution of {metric_method.replace("_", " ").title()} Across Epsilon Values')
         ax.xaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
         ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
         plt.xlim(0, 0.11)
@@ -202,14 +297,67 @@ def _(matrix_results, plt, ticker, vec_epsilon):
 
 
 @app.cell
+def _(matrix_results, metric_method, np, plt, vec_epsilon):
+    # Mean plot of concentric exploration results
+    def plot_mean_concentric_results(matrix_results, vec_epsilon, method_name=metric_method):
+        mean_values = np.mean(matrix_results, axis=1)
+        std_values = np.std(matrix_results, axis=1)
+        plt.figure(figsize=(10, 6))
+        plt.plot(vec_epsilon, mean_values, marker='o', color='blue')
+        plt.fill_between(vec_epsilon, mean_values - std_values, mean_values + std_values, color='blue', alpha=0.2)
+        plt.xlabel('Epsilon')
+        plt.ylabel(f'Mean of {method_name} Iterations')
+        plt.title(f'Mean of {method_name} Iterations Across Epsilon Values')
+        plt.xscale('log')
+        plt.grid(True, which="both", ls="--", linewidth=0.5)
+        plt.show() 
+
+    plot_mean_concentric_results(matrix_results, vec_epsilon, method_name=metric_method)
+    return
+
+
+@app.cell
+def _(A_delta, opt, optigame):
+    scattered_output = optigame.scattered_exploration(
+        a_delta=A_delta,
+        optimizer=opt,
+        num_exploration=1000,
+        num_steps=10_000,
+        inner_radius=0.1,
+        outer_radius=0.5,
+        norm_str='max',
+        metric_method="max_last",
+        cutoff=0.1,
+    )
+
+    scattered_matrix_results = scattered_output.metrics
+    scattered_vec_epsilon = scattered_output.norms
+    return scattered_matrix_results, scattered_vec_epsilon
+
+
+@app.cell
+def _(plt, scattered_matrix_results, scattered_vec_epsilon):
+    def plot_scattered_exploration_results(matrix_results, vec_epsilon):
+        plt.figure(figsize=(10, 6))
+        plt.scatter(vec_epsilon, matrix_results, alpha=0.5, color='blue')
+        plt.xlabel('Max Norm of Initial Perturbation')
+        plt.ylabel('Max Last Iteration')
+        plt.title('Scattered Exploration Results')
+        plt.xscale('log')
+        plt.grid(True, which="both", ls="--", linewidth=0.5)
+        plt.show()
+
+    plot_scattered_exploration_results(scattered_matrix_results, scattered_vec_epsilon)
+    return
+
+
+@app.cell
 def _(
     compute_l2_distances_to_ne,
     neighborhood_exploration_compute,
     optigame,
     plt,
 ):
-    # STRUCTURAL PSEUDO-CODE: Comparing Matrix Generation Methods
-
     def compare_methods(num_points=100, num_steps=5000):
         # 1. Define the shared optimizer
         opt = optigame.Optimizer.omwuoomd(0.1, 2)

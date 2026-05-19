@@ -1,9 +1,13 @@
 use crate::domain::structure::{Experiment, GameResult, GameState};
+use crate::experiments::random_neighborhood_exploration;
+use crate::experiments::types::{
+    ExplorationMethodType, ExplorationOutput, HyperParams, MetricMethodType, NormType, Params,
+};
 use crate::math::S;
 use crate::optimizers::core::Optimizer;
-use ndarray::array;
+use ndarray::{Array2, array};
 use numpy::{PyArray1, PyArray2, PyArrayMethods, ToPyArray};
-use pyo3::{Bound, Py, Python, pyclass, pyfunction, pymethods};
+use pyo3::{Bound, IntoPy, Py, PyResult, Python, pyclass, pyfunction, pymethods};
 use rayon::prelude::*;
 use std::ops::DerefMut;
 
@@ -107,6 +111,136 @@ pub fn neighborhood_exploration(
         .collect()
 }
 
-// NOTE: py_random_neighborhood_exploration and py_random_exploration need to be updated 
-// to match the new random_neighborhood_exploration signature and ExplorationOutput.
-// This might require exposing more types to Python or zipping the output back into numpy arrays.
+#[pyclass]
+pub struct PyConcentricOutput {
+    #[pyo3(get)]
+    pub slice_boundaries: Py<PyArray2<f64>>,
+    #[pyo3(get)]
+    pub metrics: Py<PyArray2<f64>>,
+}
+
+#[pyclass]
+pub struct PyScatteredOutput {
+    #[pyo3(get)]
+    pub norms: Py<PyArray1<f64>>,
+    #[pyo3(get)]
+    pub metrics: Py<PyArray1<f64>>,
+}
+
+fn parse_metric_method(method_str: &str, cutoff: f64) -> PyResult<MetricMethodType> {
+    match method_str.to_lowercase().as_str() {
+        "max_last" | "max_last_10" => Ok(MetricMethodType::MaxLast(cutoff)),
+        "var_last" | "var_last_10" => Ok(MetricMethodType::VarLast(cutoff)),
+        "total_var" => Ok(MetricMethodType::TotalVar),
+        _ => Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "Unknown metric method: {}",
+            method_str
+        ))),
+    }
+}
+
+#[pyfunction(signature = (a_delta, optimizer, num_exploration, num_steps, inner_radius, outer_radius, num_slices, metric_method, cutoff=0.1))]
+pub fn concentric_exploration<'py>(
+    py: Python<'py>,
+    a_delta: numpy::PyReadonlyArray2<f64>,
+    optimizer: Optimizer,
+    num_exploration: usize,
+    num_steps: usize,
+    inner_radius: f64,
+    outer_radius: f64,
+    num_slices: usize,
+    metric_method: &str,
+    cutoff: f64,
+) -> PyResult<PyConcentricOutput> {
+    let method = parse_metric_method(metric_method, cutoff)?;
+    let hyperparams = HyperParams {
+        num_explo: num_exploration,
+        num_iter_per_explo: num_steps,
+        inner_radius,
+        outer_radius,
+        metric_method: method,
+    };
+    let params = Params {
+        hyperparams,
+        method: ExplorationMethodType::Concentric { num_slices },
+    };
+
+    let result = random_neighborhood_exploration(a_delta.as_array(), optimizer, params);
+
+    if let ExplorationOutput::Concentric(out) = result {
+        // Convert Vec<(f64, f64)> to Array2
+        let boundaries_flat: Vec<f64> = out
+            .slices_boundaries
+            .into_iter()
+            .flat_map(|(a, b)| vec![a, b])
+            .collect();
+        let boundaries_arr = Array2::from_shape_vec((num_slices, 2), boundaries_flat)
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+
+        let runs_per_slice = num_exploration / num_slices;
+        let metrics_flat: Vec<f64> = out.metrics.into_iter().flatten().collect();
+        let metrics_arr = Array2::from_shape_vec((num_slices, runs_per_slice), metrics_flat)
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+
+        Ok(PyConcentricOutput {
+            slice_boundaries: boundaries_arr.to_pyarray(py).unbind(),
+            metrics: metrics_arr.to_pyarray(py).unbind(),
+        })
+    } else {
+        Err(pyo3::exceptions::PyRuntimeError::new_err(
+            "Expected ConcentricOutput but got ScatteredOutput",
+        ))
+    }
+}
+
+#[pyfunction(signature = (a_delta, optimizer, num_exploration, num_steps, inner_radius, outer_radius, norm_str, metric_method, cutoff=0.1))]
+pub fn scattered_exploration<'py>(
+    py: Python<'py>,
+    a_delta: numpy::PyReadonlyArray2<f64>,
+    optimizer: Optimizer,
+    num_exploration: usize,
+    num_steps: usize,
+    inner_radius: f64,
+    outer_radius: f64,
+    norm_str: &str,
+    metric_method: &str,
+    cutoff: f64,
+) -> PyResult<PyScatteredOutput> {
+    let method = parse_metric_method(metric_method, cutoff)?;
+
+    let norm_type = match norm_str.to_lowercase().as_str() {
+        "max" => NormType::MaxNorm,
+        "infinity" => NormType::InfinityNorm,
+        "frobenius" => NormType::Frobenius,
+        _ => {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Unknown norm type. Use 'max', 'infinity', or 'frobenius'",
+            ));
+        }
+    };
+
+    let hyperparams = HyperParams {
+        num_explo: num_exploration,
+        num_iter_per_explo: num_steps,
+        inner_radius,
+        outer_radius,
+        metric_method: method,
+    };
+    let params = Params {
+        hyperparams,
+        method: ExplorationMethodType::Scattered(norm_type),
+    };
+
+    let result = random_neighborhood_exploration(a_delta.as_array(), optimizer, params);
+
+    if let ExplorationOutput::Scattered(out) = result {
+        Ok(PyScatteredOutput {
+            norms: PyArray1::from_vec(py, out.norms).unbind(),
+            metrics: PyArray1::from_vec(py, out.metrics).unbind(),
+        })
+    } else {
+        Err(pyo3::exceptions::PyRuntimeError::new_err(
+            "Expected ScatteredOutput but got ConcentricOutput",
+        ))
+    }
+}

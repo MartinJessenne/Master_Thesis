@@ -55,12 +55,38 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20_Logic_and_Method/Parametric Curves Optimization.md",
+                "file": "00_The_Pillars/Global Architecture.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Parametric Curves Optimization"
+              "title": "Global Architecture"
+            }
+          },
+          {
+            "id": "961d7151554d07d5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20_Logic_and_Method/Total Variation Study.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Total Variation Study"
+            }
+          },
+          {
+            "id": "0caacc73b1deb46c",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw"
             }
           },
           {
@@ -74,7 +100,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -131,7 +157,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 400.5
+    "width": 353.5
   },
   "right": {
     "id": "96880c02a3919fdb",
@@ -238,20 +264,27 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "c95c5c24dbfe97a6",
+  "active": "961d7151554d07d5",
   "lastOpenFiles": [
+    "00_The_Pillars/_attachments/Global Architecture/Global Architecture 2026-05-19 13.50.41.excalidraw.md",
+    "00_The_Pillars/Global Architecture.md",
+    "00_The_Pillars/_attachments/Global Architecture",
+    "00_The_Pillars/_attachments",
+    "20_Logic_and_Method/Parametric Curves Optimization.md",
+    "20_Logic_and_Method/Total Variation Study.md",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw.md",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/_attachments/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw/Pasted Image 20260518135032_576.png",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/_attachments/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw",
+    "20_Logic_and_Method/_attachments/Parametric Curves Optimization/_attachments",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization_2.png",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization_1.png",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization.png",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/file-20260518124311530.png",
-    "20_Logic_and_Method/Parametric Curves Optimization.md",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/file.png",
     "20_Logic_and_Method/_attachments",
     "20_Logic_and_Method/200_Attachments",
-    "20_Logic_and_Method/Total Variation Study.md",
     "20_Logic_and_Method/Theory_NE_Parameterization.md",
-    "00_The_Pillars/Sans titre.md",
     "00_The_Pillars/Final_Sprint_Dashboard.md",
     "00_The_Pillars/Ch5_Optimization_Application.md",
     "20_Logic_and_Method/Concentric exploration.md",
@@ -273,13 +306,8 @@
     "10_Inquiry/Q_Simultaneous_Ill_Conditioning.md",
     "00_The_Pillars/Ch4_Empirical_Study.md",
     "10_Inquiry/Jeu à équilibre arbitraire.md",
-    "10_Inquiry/Q_Understanding_A_delta.md",
     "Research_Flow.canvas",
     "Z_Archive/Sans titre 2.base",
-    "Z_Archive/Sans titre 1.base",
-    "Z_Archive",
-    "99_System/Templates",
-    "99_System",
-    "90_Library"
+    "Z_Archive/Sans titre 1.base"
   ]
 }

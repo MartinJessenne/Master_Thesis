@@ -15,7 +15,8 @@ mod optigame {
 
     #[pymodule_export]
     pub use crate::ffi::{
-        neighborhood_exploration, PyExperiment as Experiment,
+        neighborhood_exploration, concentric_exploration, scattered_exploration, PyExperiment as Experiment,
+        PyConcentricOutput, PyScatteredOutput,
     };
 
     #[pymodule_export]

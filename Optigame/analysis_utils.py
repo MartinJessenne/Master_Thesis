@@ -222,7 +222,7 @@ def neighborhood_exploration_compute(
         return q_fn
     """
 
-    x_axis= np.linspace(0, 0.25, number_of_points)
+    x_axis= np.linspace(0, 1, number_of_points)
 
 
     list_of_results = []
@@ -312,8 +312,8 @@ def plot_list_of_results(list_of_results, x_axis, P_lambdas, Q_gammas, metric_ty
         ax.grid(True, ls="--", alpha=0.6)
 
         ax2 = ax.twinx()
-        ax2.plot(x_axis, P_lambdas, color='tab:orange', linestyle='--', label=r'Theoretical $x^*$')
-        ax2.plot(x_axis, Q_gammas, color='tab:green', linestyle='--', label=r'Theoretical $y^*$')
+        ax2.plot(x_axis, P_lambdas, color='tab:orange', linestyle='--', label=r'Theoretical $x^*_0$')
+        ax2.plot(x_axis, Q_gammas, color='tab:green', linestyle='--', label=r'Theoretical $y^*_0$')
         ax2.set_ylabel('Nash Equilibrium')
         ax2.legend(loc='upper right')
 
@@ -335,18 +335,18 @@ def plot_computed_vs_theoretical_NE(list_of_results, x_axis,P_lambdas, Q_gammas)
     final_x = np.array(final_x)
     final_y = np.array(final_y)
 
-    ax_p_vs_NE.plot(x_axis, P_lambdas, label=f'theoretical $p$', linestyle=':')
-    ax_p_vs_NE.plot(x_axis, final_x[:, 0], label=f'computed $p$')
+    ax_p_vs_NE.plot(x_axis, P_lambdas, label=f'theoretical $x^*_0$', linestyle=':')
+    ax_p_vs_NE.plot(x_axis, final_x[:, 0], label=f'computed $x^*_0$')
 
-    ax_q_vs_NE.plot(x_axis, Q_gammas, label=f'theoretical $q$', linestyle=':')
-    ax_q_vs_NE.plot(x_axis, final_y[:, 0], label=f'computed $q$')
+    ax_q_vs_NE.plot(x_axis, Q_gammas, label=f'theoretical $y^*_0$', linestyle=':')
+    ax_q_vs_NE.plot(x_axis, final_y[:, 0], label=f'computed $y^*_0$')
 
     ax_p_vs_NE.set_xlabel(r'$x$')
     ax_p_vs_NE.set_ylabel('Value')
     ax_q_vs_NE.set_xlabel(r'$x$')
     ax_q_vs_NE.set_ylabel('Value')
-    ax_p_vs_NE.set_title(r'last iteration computed $x^*_0$ vs theoretical $\lambda(x)$ value')
-    ax_q_vs_NE.set_title(r'last iteration computed $y^*_0$ vs theoretical $\gamma(x)$ value')
+    ax_p_vs_NE.set_title(r'last iteration computed $x^*_0$ vs theoretical value')
+    ax_q_vs_NE.set_title(r'last iteration computed $y^*_0$ vs theoretical value')
     ax_p_vs_NE.legend()
     ax_q_vs_NE.legend()
     ax_p_vs_NE.grid(True, ls="--", alpha=0.6)
