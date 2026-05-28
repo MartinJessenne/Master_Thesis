@@ -69,12 +69,38 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20_Logic_and_Method/Total Variation Study.md",
+                "file": "Z_Archive/Retour du 21 Mai 2026.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Total Variation Study"
+              "title": "Retour du 21 Mai 2026"
+            }
+          },
+          {
+            "id": "3bd430a10bdf6d74",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "00_The_Pillars/_attachments/Ch4_Empirical_Study/Ch4_Empirical_Study 2026-05-20 11.11.53.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Ch4_Empirical_Study 2026-05-20 11.11.53.excalidraw"
+            }
+          },
+          {
+            "id": "378c8e0a0991b7ec",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "90_Library/Lit_Forgetful_Algorithms.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Lit_Forgetful_Algorithms"
             }
           },
           {
@@ -266,12 +292,21 @@
   },
   "active": "961d7151554d07d5",
   "lastOpenFiles": [
+    "Z_Archive/Retour du 11 mai 2026.md",
+    "Z_Archive/Retour du 21 Mai 2026.md",
+    "00_The_Pillars/Final_Sprint_Dashboard.md",
+    "00_The_Pillars/Ch4_Empirical_Study.md",
+    "00_The_Pillars/_attachments/Ch4_Empirical_Study/Ch4_Empirical_Study 2026-05-20 11.11.53.excalidraw.md",
+    "90_Library/Lit_Forgetful_Algorithms.md",
+    "00_The_Pillars/_attachments/Ch4_Empirical_Study",
+    "10_Inquiry/Sans titre.md",
+    "00_The_Pillars/Master_Dashboard.md",
+    "20_Logic_and_Method/Total Variation Study.md",
     "00_The_Pillars/_attachments/Global Architecture/Global Architecture 2026-05-19 13.50.41.excalidraw.md",
     "00_The_Pillars/Global Architecture.md",
     "00_The_Pillars/_attachments/Global Architecture",
     "00_The_Pillars/_attachments",
     "20_Logic_and_Method/Parametric Curves Optimization.md",
-    "20_Logic_and_Method/Total Variation Study.md",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw.md",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/_attachments/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw/Pasted Image 20260518135032_576.png",
     "20_Logic_and_Method/_attachments/Parametric Curves Optimization/_attachments/Parametric Curves Optimization 2026-05-18 13.32.09.excalidraw",
@@ -285,12 +320,10 @@
     "20_Logic_and_Method/_attachments",
     "20_Logic_and_Method/200_Attachments",
     "20_Logic_and_Method/Theory_NE_Parameterization.md",
-    "00_The_Pillars/Final_Sprint_Dashboard.md",
     "00_The_Pillars/Ch5_Optimization_Application.md",
     "20_Logic_and_Method/Concentric exploration.md",
     "Excalidraw/Concentric_Exploration_Design.md",
     "Excalidraw",
-    "Z_Archive/Retour du 11 mai 2026.md",
     "Z_Archive/Convergence in Ill-Conditioned Matrix Games.md",
     "90_Library/Lit_DeepResearch_The Shift from Ergodic to Iteration-Wise Convergence in Min-Max Optimization and Deep Learning.md",
     "20_Logic_and_Method/Method_Modular_FFI_Onion_Architecture.md",
@@ -300,14 +333,7 @@
     "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
     "20_Logic_and_Method/Theory_Matrix_Normalization.md",
     "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
-    "20_Logic_and_Method/Method_Chaos_Metrics.md",
-    "20_Logic_and_Method/Implementation_Utils/Impl_Autocomplete_Fix.md",
-    "10_Inquiry/Q_Separation_in_ML_Optimization.md",
-    "10_Inquiry/Q_Simultaneous_Ill_Conditioning.md",
-    "00_The_Pillars/Ch4_Empirical_Study.md",
-    "10_Inquiry/Jeu à équilibre arbitraire.md",
     "Research_Flow.canvas",
-    "Z_Archive/Sans titre 2.base",
-    "Z_Archive/Sans titre 1.base"
+    "Z_Archive/Sans titre 2.base"
   ]
 }

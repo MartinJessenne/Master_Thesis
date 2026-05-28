@@ -21,3 +21,5 @@ tags: [thesis, chapter_4]
 ## Best vs Last Iterate
 - [[R_Convergence_Modes_Comparison]]
 
+
+# Narration

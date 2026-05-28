@@ -38,12 +38,12 @@ gantt
 ### 1. Implémentation & Expériences (Code)
 - [x] #task Mettre à jour l'échantillonnage de la section 4.1 : utiliser des couronnes concentriques (boule $L_\infty$) autour de $A_\delta$. ⏫ 📅 2026-05-14
 - [x] #task Implémenter le contrôle de densité : s'assurer d'avoir un nombre homogène de matrices par couronne. ⏫ 📅 2026-05-14
-- [ ] #task Optimiser l'évaluation temporelle avec la fonction `cumsum`. 🔼 📅 2026-05-18
-- [ ] #task Tracer l'évolution temporelle de la *Total Variation* sur une trajectoire unique et l'agréger. ⏫ 📅 2026-05-18
+- [x] #task Optimiser l'évaluation temporelle avec la fonction `cumsum`. 🔼 📅 2026-05-18
+- [x] #task Tracer l'évolution temporelle de la *Total Variation* sur une trajectoire unique et l'agréger. ⏫ 📅 2026-05-18
 
 ### 2. Visualisation & Figures (Graphes)
-- [ ] #task Remplacer le Boxplot (Figure 2) par un Bar plot / Min plot (affichant moyenne et variance). ⏫ 📅 2026-05-18
-- [ ] #task Produire les graphes finaux : variance des 10 % dernières itérations et *Total Variation*. 🔼 📅 2026-05-18
+- [x] #task Remplacer le Boxplot (Figure 2) par un Bar plot / Min plot (affichant moyenne et variance). ⏫ 📅 2026-05-18
+- [x] #task Produire les graphes finaux : variance des 10 % dernières itérations et *Total Variation*. 🔼 📅 2026-05-18
 
 ### 3. Réflexion Théorique & Rédaction (`Master_Thesis.typ`)
 - [ ] #task **(PRIORITÉ MAJEURE)** Justifier la matrice paramétrique personnelle et démontrer mathématiquement la réduction à 2 degrés de liberté. ⏫ 📅 2026-05-21

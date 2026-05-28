@@ -52,54 +52,75 @@ def _(plt):
 
 
 @app.cell
-def _(
-    neighborhood_exploration_compute,
-    neighborhood_exploration_plot,
-    optigame,
-):
-    Ogda = optigame.Optimizer.ogda(0.1, 2)
+def _(np):
+    # This cell is responsible for initiating different instances of parametric curves families based on relevant parameters
 
-    # For this one, we're going to approach the Nash Equilibrium this way : starting from (0.5, 0.5) (Should converge instantly, since x and y are initialized at (0.5, 0.5))
-    # going to (0, 0.5) (which is A_\delta's Nash Equilibrium) in a straight line. 
-    def make_p(a, b):
+    def make_linear(a_x, b_x, a_y, b_y):
         """
-        This function takes as input a, b,
-        and returns a function p_fn that takes as input x ranging [0, 1] and returns the values of the Nash Equilibrium for point x^*_0 = a*x + b, 
+        This function takes as input a_x, b_x, a_y, b_y,
+        and returns two functions p_fn and q_fn that take as input x ranging [0, 1] and return the values of the Nash Equilibrium for point x^*_0 = a_x*x + b_x and y^*_0 = a_y*x + b_y, 
         for this specific iteration. 
-
-        Here we want to test a line between (0.5, 0.5) and (0, 0.5), so we want to test p_fn(x) = -0.5*x +0.5, with x going from 0 to 1. 
         """
         def p_fn(x):
-            return a * x + b
-        return p_fn
+            return a_x * x + b_x
 
-    def make_q(a, b):
-        """
-        This function takes as input a, b,
-        and returns a function q_fn that takes as input x ranging [0, 1] and returns the values of the Nash Equilibrium for point y^*_0 = a*x + b, 
-        for this specific iteration. 
-
-        Here we want to test a line between (0.5, 0.5) and (0, 0.5), so we want to test q_fn(x) = 0*x + 0.5, with x going from 0 to 1.
-        """
         def q_fn(x):
-            return a * x + b
-        return q_fn
+            return a_y * x + b_y
 
-    results_OGDA = neighborhood_exploration_compute(Ogda, p_transform = make_p(-0.5, 0.5), q_transform = make_q(0, 0.5), number_of_points=100, num_steps=10000)
-    neighborhood_exploration_plot(results_OGDA)
-    return make_p, make_q
+        return p_fn, q_fn
+
+
+    def make_circular(center_x, center_y, r, theta):
+        """
+        This function takes as input center_x, center_y, r, theta,
+        and returns two functions p_fn and q_fn that take as input x ranging [0, 1] and return the values of the Nash Equilibrium for point x^*_0 = center_x + r*cos(theta*x) and y^*_0 = center_y + r*sin(theta*x), 
+        for this specific iteration. 
+        """
+        def p_fn(x):
+            return center_x + r * np.cos(theta * x)
+
+        def q_fn(x):
+            return center_y + r * np.sin(theta * x)
+
+        return p_fn, q_fn
+
+
+    return (make_circular,)
+
+
+@app.cell
+def _(make_circular, np):
+    # Instantiate circular exploration 
+    _delta = 0.1
+    p_fn, q_fn = make_circular(center_x=1/(1+_delta), center_y=1/2*(1+_delta), r=0.5*(_delta/(1+_delta)), theta=2*np.pi)
+    return p_fn, q_fn
 
 
 @app.cell
 def _(
-    make_p,
-    make_q,
     neighborhood_exploration_compute,
     neighborhood_exploration_plot,
     optigame,
+    p_fn,
+    q_fn,
+):
+    Ogda = optigame.Optimizer.ogda(0.1, 2)
+
+    results_OGDA = neighborhood_exploration_compute(Ogda, p_transform = p_fn, q_transform = q_fn, number_of_points=100, num_steps=10000)
+    neighborhood_exploration_plot(results_OGDA)
+    return
+
+
+@app.cell
+def _(
+    neighborhood_exploration_compute,
+    neighborhood_exploration_plot,
+    optigame,
+    p_fn,
+    q_fn,
 ):
     OMWU = optigame.Optimizer.omwuoomd(0.1, 2)
-    results_OMWU = neighborhood_exploration_compute(OMWU, p_transform=make_p(-0.5, 0.5), q_transform=make_q(0, 0.5), number_of_points=500, num_steps=10_000)
+    results_OMWU = neighborhood_exploration_compute(OMWU, p_transform=p_fn, q_transform=q_fn, number_of_points=500, num_steps=10_000)
     neighborhood_exploration_plot(results_OMWU, metric_type="total_var")
     return (results_OMWU,)
 
@@ -112,14 +133,14 @@ def _(mo, results_OMWU):
 
 
 @app.cell
-def _(iteration_idx, make_p, make_q, np, plt, results_OMWU):
+def _(iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
     def plot_2d_profile(results_OMWU, idx, ax):
         result = results_OMWU.list_of_results[idx]
         x_history = result.x_history
         y_history = result.y_history
         ax.set_title("2D Profile of the strategies")
         x_axis = np.linspace(0, 1, len(results_OMWU.list_of_results))
-        (x_0_star, y_0_star) = make_p(-0.5, 0.5)(x_axis[idx]), make_q(0, 0.5)(x_axis[idx])
+        (x_0_star, y_0_star) = p_fn(x_axis[idx]), q_fn(x_axis[idx])
 
         # Vectorized plotting
         ax.plot(x_history[:, 0], y_history[:, 0], '*', color='blue', alpha=0.5, label='Strategy Trajectory')
@@ -150,7 +171,7 @@ def _(iteration_idx, make_p, make_q, np, plt, results_OMWU):
         ax.set_title("Cumulative Total Variation")
         ax.set_xlabel("Iteration")
         ax.set_ylabel("Cumulative Total Variation")
-        ax.set_yscale('log')
+        # ax.set_yscale('log')
         ax.grid(True, which="both", ls="--", linewidth=0.5)
 
     def iteration_wise_study(results_OMWU, idx):
@@ -326,7 +347,7 @@ def _(A_delta, opt, optigame):
         inner_radius=0.1,
         outer_radius=0.5,
         norm_str='max',
-        metric_method="max_last",
+        metric_method="total_var",
         cutoff=0.1,
     )
 

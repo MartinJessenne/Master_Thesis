@@ -1,4 +1,4 @@
-﻿---
+---
 type: Pillar
 status: Active
 related_pillar: "[[Thesis_Master_Plan]]"
