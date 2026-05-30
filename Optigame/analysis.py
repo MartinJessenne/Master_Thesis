@@ -273,10 +273,11 @@ def _(iteration_idx, np, plt, results_OMWU):
 
 @app.cell
 def _(np, optigame):
-    delta = 0.1
+    delta = 0.01
     A_delta = np.array([[1/2+ delta, 1/2],[0,1]])
-    opt = optigame.Optimizer.omwuoomd(0.1, 2)
-    metric_method = "total_var"
+    opt = optigame.Optimizer.ogda(0.1, 2)
+    opt_name = "OGDA"
+    metric_method = "max_last_10"
 
     output = optigame.concentric_exploration(
         a_delta=A_delta,
@@ -292,7 +293,7 @@ def _(np, optigame):
     matrix_results = output.metrics
     # We use the upper bound of each slice as the epsilon for plotting
     vec_epsilon = output.slice_boundaries[:, 1]
-    return A_delta, matrix_results, metric_method, opt, vec_epsilon
+    return A_delta, matrix_results, metric_method, opt, opt_name, vec_epsilon
 
 
 @app.cell
@@ -318,20 +319,41 @@ def _(matrix_results, metric_method, plt, ticker, vec_epsilon):
 
 
 @app.cell
-def _(matrix_results, metric_method, np, plt, vec_epsilon):
+def _(matrix_results, metric_method, np, opt_name, plt, vec_epsilon):
     # Mean plot of concentric exploration results
     def plot_mean_concentric_results(matrix_results, vec_epsilon, method_name=metric_method):
         mean_values = np.mean(matrix_results, axis=1)
         std_values = np.std(matrix_results, axis=1)
-        plt.figure(figsize=(10, 6))
-        plt.plot(vec_epsilon, mean_values, marker='o', color='blue')
-        plt.fill_between(vec_epsilon, mean_values - std_values, mean_values + std_values, color='blue', alpha=0.2)
-        plt.xlabel('Epsilon')
-        plt.ylabel(f'Mean of {method_name} Iterations')
-        plt.title(f'Mean of {method_name} Iterations Across Epsilon Values')
-        plt.xscale('log')
-        plt.grid(True, which="both", ls="--", linewidth=0.5)
-        plt.show() 
+        fig = plt.figure(figsize=(10, 6))
+
+        metric_labels = {
+            "max_last_10": r"Max Duality Gap of the last 10% iterations",
+            "var_last_10": r"Duality Gap Variance of the last 10% iterations",
+            "total_var": r"Total Variation $\sum_t |\mathrm{Gap}^t - \mathrm{Gap}^{t-1}|$"
+        }
+
+        display_name = metric_labels.get(method_name, method_name.replace("_", " ").title())
+
+        plt.plot(vec_epsilon, mean_values, marker='o', color='blue', label='Empirical Mean')
+        plt.fill_between(
+            vec_epsilon, 
+            np.maximum(mean_values - std_values, 0),
+            mean_values + std_values, 
+            color='blue', 
+            alpha=0.2, 
+            label=r'$\pm 1$ Standard Deviation'
+        )
+
+        plt.xlabel(r"Perturbation Magnitude $\epsilon U$ ($L_\infty$-norm)", fontsize=14)
+        plt.ylabel(display_name, fontsize=14)
+        plt.title(f"Sensitivity of {opt_name} Boundary Instability\nto Neighborhood Perturbations of $A_\delta$", fontsize=15, weight='bold', pad=15)
+        plt.xscale('linear')
+        plt.grid(True, which="both", ls="--", linewidth=0.5, alpha=0.6)
+        plt.legend(loc='upper right', fontsize=12, frameon=True, facecolor='white', edgecolor='none')
+
+        fig.savefig(f"../images/mean_concentric_results_{method_name}_{opt_name}.svg", format="svg", bbox_inches='tight')
+
+        plt.show()
 
     plot_mean_concentric_results(matrix_results, vec_epsilon, method_name=metric_method)
     return

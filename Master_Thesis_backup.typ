@@ -165,42 +165,20 @@ These metrics provide a quantitative basis for mapping the stability of the para
 In this chapter, we deploy our computational framework to empirically investigate the theoretical bounds discussed previously. We aim to map the non-convergent behavior of OMWU in ill-conditioned games and validate the theoretical separation between last-iterate convergence and other modes (best/random).
 
 == The Baseline Hard Instance & Random Neighborhood Exploration
-
-To establish an empirical baseline, we replicate the non-convergent behavior documented by @cai2025fastconvergence. The baseline game is defined by a $2 times 2$ zero-sum matrix:
+Before evaluating specific parameterizations, we test the robustness of OMWU's non-convergent behavior. We do this by applying uniform random perturbations to the $A_delta$ baseline game introduced by @cai2025fastconvergence, defined as:
 $ A_delta = mat(1/2 + delta, 1/2; 0, 1) $
-where $delta > 0$ represents the minimum probability assigned to any action in the unique Nash Equilibrium $(x^*, y^*)$, given by $x^* = (1/(1+delta), delta/(1+delta))$ and $y^* = (1/2, 1/2)$. As $delta -> 0$, the optimal strategy for the $x$-player is positioned arbitrarily close to the boundary of the probability simplex $Delta^2$. In this setting, the last-iterate duality gap of OMWU fails to converge to zero, instead entering a persistent cyclic phase.
+The objective is to determine whether the observed instability is an artifact of the exact matrix structure or a robust phenomenon under small perturbations. We define a perturbation matrix $U in [-1, 1]^(2 times 2)$ scaled by a parameter $epsilon > 0$, and evaluate the OMWU dynamics on the matrix $A_delta + epsilon U$. To thoroughly explore the neighborhood, we conducted a grid search for each value of $epsilon$, running 1,000 independent experiments, each for 10,000 steps.
 
-To determine whether this pathological behavior is a fragile artifact of the exact matrix coefficients or a robust phenomenon, we perform a neighborhood analysis. We apply uniform random perturbations to the baseline matrix $A_delta$, defining:
-$ A_("perturbed") = A_delta + epsilon U $
-where $U$ is a perturbation matrix sampled uniformly in $B_infinity (0,1)$, and $epsilon > 0$ scales the perturbation magnitude, for this entire part, we set $delta = 0.01$.
-
-To map the spatial characteristics of this instability, we design a concentric shell exploration. For $(epsilon_i)_(i in [1, n])$ such that $0 < epsilon_1 < ... < epsilon_n = epsilon$, the perturbation domain is partitioned into concentric $L_infinity$ shells $[epsilon_(i-1), epsilon_i]$. Within each concentric band, we sample the same number of matrices, in the @concentric_exploration_OMWU set-up we sampled 1,000 independent matrix for each shell, and for each matrix the algorithm ran for 10,000 steps. 
-
-#v(1cm)
+#v(2cm)
 #align(center)[
 #figure(
-  image("images\mean_concentric_results_max_last_10_OMWU.svg", width: 80%),
+  image("images/BoxPlot.png", width: 80%),
   caption: [Distribution of the maximum duality gap over the last 10% of iterations for OMWU, across different perturbation magnitudes $epsilon$.]
-)<concentric_exploration_OMWU>
+)
 ]
-#v(1cm)
+#v(2cm)
 
-The results, presented in the meanplot above, indicate that adding a uniform perturbation to $A_delta$ does not immediately induce convergence. For small values of $epsilon$, the median of the last-iterate duality gap remains elevated, matching the baseline $A_delta$ behavior. This confirms that the non-convergent behavior is robust to small numerical perturbations. 
-
-However, as $epsilon$ increases, the median duality gap decays, indicating that the pathology is a local anomaly. Larger perturbations shift the Nash Equilibrium away from the extreme boundaries of the simplex toward the interior, restoring convergence.
-
-To verify that this behavior is specific to OMWU, we execute the same concentric exploration using Optimistic Gradient Descent-Ascent (OGDA).
-
-#v(1cm)
-#align(center)[
-#figure(
-  image("images\mean_concentric_results_max_last_10_OGDA.svg", width: 80%),
-  caption: [Distribution of the maximum duality gap over the last 10% of iterations for OMWU, across different perturbation magnitudes $epsilon$.]
-)<concentric_exploration_OGDA>
-]
-#v(1cm)
-
- In contrast to OMWU, OGDA, which employs a quadratic Euclidean regularizer, exhibits no pathological instabilities. Across all perturbation shells, the last-iterate of OGDA converges to the perturbed equilibrium, maintaining a near-zero last-iterate duality gap. This comparison suggests that the pathology is an intrinsic property of OMWU's regularizer structure, rather than a general property of learning in zero-sum games. This localized boundary pathology motivates a systematic study using a custom parametric family of games to map the entire simplex.
+The results, presented in the boxplot above, indicate that adding a uniform perturbation to $A_delta$ does not induce convergence. While the variance of the metric increases significantly with larger values of $epsilon$, the median remains elevated across all perturbation magnitudes. This observation confirms that the non-convergent behavior is robust, which motivates the study of specific parametric lines to carefully control the equilibrium's position relative to the simplex boundaries.
 
 == Parametric Game Design ($A_(lambda, gamma)$) & Normalization
 To exhaustively test OMWU's sensitivity to the minimum equilibrium probability $delta$, we require the ability to construct arbitrary game matrices with a known, predetermined Nash Equilibrium $(x^*, y^*)$. 
