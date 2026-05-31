@@ -243,18 +243,18 @@ However, the comparison reveals numerical discrepancies during the optimization 
 == Strategy Profiles and Orbital Dynamics
 To analyze the behavioral dynamics of the algorithms, we evaluate the evolution of the strategies in both 1D and 2D projections. 
 
-#v(2cm)
-#align(center)[
-#figure(
-  grid(
-    rows: 2,
-    gutter: 1em,
-    image("images/Ogda_Last_xo_vs_ne.png", width: 100%),
-    image("images/Omwu_last_it_vs_ne.png", width: 100%),
-  ),
-  caption: [Evolution of computed last-iterate strategies against theoretical Nash Equilibrium probabilities for OGDA (top) and OMWU (bottom).]
-)
-]
+// #v(2cm)
+// #align(center)[
+// #figure(
+//   grid(
+//     rows: 2,
+//     gutter: 1em,
+//     image("images/Ogda_Last_xo_vs_ne.png", width: 100%),
+//     image("images/Omwu_last_it_vs_ne.png", width: 100%),
+//   ),
+//   caption: [Evolution of computed last-iterate strategies against theoretical Nash Equilibrium probabilities for OGDA (top) and OMWU (bottom).]
+// )
+// ]
 
 The strategy tracking results indicate a clear separation between the algorithms. OGDA consistently identifies and tracks the theoretical Nash Equilibrium as the game parameters vary. In contrast, OMWU's last-iterate computation exhibits sustained oscillations, failing to converge to the theoretical values.
 

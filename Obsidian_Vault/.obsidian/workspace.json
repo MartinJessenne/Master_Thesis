@@ -69,12 +69,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Z_Archive/Retour du 21 Mai 2026.md",
+                "file": "00_The_Pillars/Part 4.4.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Retour du 21 Mai 2026"
+              "title": "Part 4.4"
+            }
+          },
+          {
+            "id": "5dce3b94046034b1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "90_Library/Lit_Forgetful_Algorithms.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Lit_Forgetful_Algorithms"
             }
           },
           {
@@ -199,7 +213,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Profil des stratégies dans le plan 2D.md",
+                "file": "00_The_Pillars/Part 4.4.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -209,7 +223,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Rétrolien pour Profil des stratégies dans le plan 2D"
+              "title": "Rétrolien pour Part 4.4"
             }
           },
           {
@@ -269,13 +283,23 @@
               "icon": "lucide-list",
               "title": "Plan de Exploration aléatoire de voisinage"
             }
+          },
+          {
+            "id": "1374205290a3199f",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -287,17 +311,25 @@
       "command-palette:Ouvrir la palette de commandes": false,
       "bases:Créer une nouvelle base": false,
       "templater-obsidian:Templater": false,
-      "obsidian-excalidraw-plugin:New drawing": false
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "obsidian-git:Open Git source control": false
     }
   },
   "active": "961d7151554d07d5",
   "lastOpenFiles": [
-    "Z_Archive/Retour du 11 mai 2026.md",
+    "00_The_Pillars/Part 4.4.md",
+    "00_The_Pillars/Part 4.5.md",
+    "00_The_Pillars/_attachments/Part 4.5/Part 4.5.png",
+    "00_The_Pillars/_attachments/Part 4.5",
+    "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
+    "00_The_Pillars/Drafts/Ch4_5_Best_vs_Last_Iterate_Separation.md",
+    "00_The_Pillars/Drafts/Ch4_4_Trajectory_Dynamics_and_Orbital_Analysis.md",
+    "90_Library/Lit_Forgetful_Algorithms.md",
     "Z_Archive/Retour du 21 Mai 2026.md",
+    "Z_Archive/Retour du 11 mai 2026.md",
     "00_The_Pillars/Final_Sprint_Dashboard.md",
     "00_The_Pillars/Ch4_Empirical_Study.md",
     "00_The_Pillars/_attachments/Ch4_Empirical_Study/Ch4_Empirical_Study 2026-05-20 11.11.53.excalidraw.md",
-    "90_Library/Lit_Forgetful_Algorithms.md",
     "00_The_Pillars/_attachments/Ch4_Empirical_Study",
     "10_Inquiry/Sans titre.md",
     "00_The_Pillars/Master_Dashboard.md",
@@ -327,13 +359,6 @@
     "Z_Archive/Convergence in Ill-Conditioned Matrix Games.md",
     "90_Library/Lit_DeepResearch_The Shift from Ergodic to Iteration-Wise Convergence in Min-Max Optimization and Deep Learning.md",
     "20_Logic_and_Method/Method_Modular_FFI_Onion_Architecture.md",
-    "20_Logic_and_Method/Method_Zero_Allocation_Numerical_Loops.md",
-    "20_Logic_and_Method/Method_Parallel_Monte_Carlo_Worker_Pool.md",
-    "10_Inquiry/Q_Random_Exploration.md",
-    "90_Library/Lit_Separation_Best_Random_Last_Iterate.md",
-    "20_Logic_and_Method/Theory_Matrix_Normalization.md",
-    "20_Logic_and_Method/Theory_Logistic_Regression_Game.md",
-    "Research_Flow.canvas",
-    "Z_Archive/Sans titre 2.base"
+    "Research_Flow.canvas"
   ]
 }

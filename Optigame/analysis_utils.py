@@ -321,8 +321,8 @@ def plot_list_of_results(list_of_results, x_axis, P_lambdas, Q_gammas, metric_ty
     plt.show()
 
 
-def plot_computed_vs_theoretical_NE(list_of_results, x_axis,P_lambdas, Q_gammas):
-    fig, (ax_p_vs_NE, ax_q_vs_NE) = plt.subplots(2, 1, figsize=(8, 12))
+def plot_computed_vs_theoretical_NE(list_of_results, model_string, x_axis, P_lambdas, Q_gammas):
+    fig, (ax_p_vs_NE, ax_q_vs_NE) = plt.subplots(1, 2, figsize=(12, 5.5), constrained_layout=True)
 
     final_x = []
     final_y = []
@@ -335,28 +335,30 @@ def plot_computed_vs_theoretical_NE(list_of_results, x_axis,P_lambdas, Q_gammas)
     final_x = np.array(final_x)
     final_y = np.array(final_y)
 
-    ax_p_vs_NE.plot(x_axis, P_lambdas, label=f'theoretical $x^*_0$', linestyle=':')
-    ax_p_vs_NE.plot(x_axis, final_x[:, 0], label=f'computed $x^*_0$')
-
-    ax_q_vs_NE.plot(x_axis, Q_gammas, label=f'theoretical $y^*_0$', linestyle=':')
-    ax_q_vs_NE.plot(x_axis, final_y[:, 0], label=f'computed $y^*_0$')
-
-    ax_p_vs_NE.set_xlabel(r'$x$')
-    ax_p_vs_NE.set_ylabel('Value')
-    ax_q_vs_NE.set_xlabel(r'$x$')
-    ax_q_vs_NE.set_ylabel('Value')
-    ax_p_vs_NE.set_title(r'last iteration computed $x^*_0$ vs theoretical value')
-    ax_q_vs_NE.set_title(r'last iteration computed $y^*_0$ vs theoretical value')
-    ax_p_vs_NE.legend()
-    ax_q_vs_NE.legend()
+    # Left plot: x_0 (p) player convergence
+    ax_p_vs_NE.plot(x_axis, P_lambdas, label=r'Theoretical $x^*_0$', color='blue', linestyle='--')
+    ax_p_vs_NE.plot(x_axis, final_x[:, 0], label=r'Computed Last-Iterate', color='blue', linestyle='-')
+    ax_p_vs_NE.set_xlabel(r'Parameter $x$')
+    ax_p_vs_NE.set_ylabel(r'Strategy Probability $p$')
+    ax_p_vs_NE.set_title(r'Strategy $x^*_0$ Convergence')
+    ax_p_vs_NE.legend(loc='lower left')
     ax_p_vs_NE.grid(True, ls="--", alpha=0.6)
+
+    # Right plot: y_0 (q) player convergence
+    ax_q_vs_NE.plot(x_axis, Q_gammas, label=r'Theoretical $y^*_0$', color='blue', linestyle='--')
+    ax_q_vs_NE.plot(x_axis, final_y[:, 0], label=r'Computed Last-Iterate', color='blue', linestyle='-')
+    ax_q_vs_NE.set_xlabel(r'Parameter $x$')
+    ax_q_vs_NE.set_ylabel(r'Strategy Probability $q$')
+    ax_q_vs_NE.set_title(r'Strategy $y^*_0$ Convergence')
+    ax_q_vs_NE.legend(loc='lower left')
     ax_q_vs_NE.grid(True, ls="--", alpha=0.6)
 
-    plt.tight_layout()
+    # fig.savefig(f"../images/{model_string}_Last_xo_vs_ne.svg", format="svg", dpi=300)
+    
     plt.show()
 
 
-def neighborhood_exploration_plot(NeighborhoodExplorationResult: NeighborhoodExplorationResult, metric_type='max_last_10'):
+def neighborhood_exploration_plot(NeighborhoodExplorationResult: NeighborhoodExplorationResult, model_string: str, metric_type='max_last_10'):
 
     list_of_results = NeighborhoodExplorationResult.list_of_results
     x_axis= NeighborhoodExplorationResult.x_axis
@@ -365,4 +367,4 @@ def neighborhood_exploration_plot(NeighborhoodExplorationResult: NeighborhoodExp
 
     plot_list_of_results(list_of_results, x_axis, P_lambdas, Q_gammas, metric_type=metric_type)
 
-    plot_computed_vs_theoretical_NE(list_of_results, x_axis=x_axis, P_lambdas=P_lambdas, Q_gammas=Q_gammas)
+    plot_computed_vs_theoretical_NE(list_of_results, model_string, x_axis=x_axis, P_lambdas=P_lambdas, Q_gammas=Q_gammas)

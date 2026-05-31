@@ -91,9 +91,9 @@ def _(np):
 @app.cell
 def _(make_circular, np):
     # Instantiate circular exploration 
-    _delta = 0.1
-    p_fn, q_fn = make_circular(center_x=1/(1+_delta), center_y=1/2*(1+_delta), r=0.5*(_delta/(1+_delta)), theta=2*np.pi)
-    return p_fn, q_fn
+    circular_delta = 0.1
+    p_fn, q_fn = make_circular(center_x=1/(1+circular_delta), center_y=1/(2*(1+circular_delta)), r=0.5*(circular_delta/(1+circular_delta)), theta=2*np.pi)
+    return circular_delta, p_fn, q_fn
 
 
 @app.cell
@@ -105,9 +105,10 @@ def _(
     q_fn,
 ):
     Ogda = optigame.Optimizer.ogda(0.1, 2)
+    model_string = "OGDA"
 
     results_OGDA = neighborhood_exploration_compute(Ogda, p_transform = p_fn, q_transform = q_fn, number_of_points=100, num_steps=10000)
-    neighborhood_exploration_plot(results_OGDA)
+    neighborhood_exploration_plot(results_OGDA, model_string=model_string)
     return
 
 
@@ -121,19 +122,19 @@ def _(
 ):
     OMWU = optigame.Optimizer.omwuoomd(0.1, 2)
     results_OMWU = neighborhood_exploration_compute(OMWU, p_transform=p_fn, q_transform=q_fn, number_of_points=500, num_steps=10_000)
-    neighborhood_exploration_plot(results_OMWU, metric_type="total_var")
+    neighborhood_exploration_plot(results_OMWU, model_string="OMWU", metric_type="total_var")
     return (results_OMWU,)
 
 
 @app.cell
 def _(mo, results_OMWU):
-    iteration_idx = mo.ui.slider(0, len(results_OMWU.list_of_results),1, value=250)
+    iteration_idx = mo.ui.slider(0, len(results_OMWU.list_of_results) - 1, 1, value=250)
     iteration_idx
     return (iteration_idx,)
 
 
 @app.cell
-def _(iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
+def _(circular_delta, iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
     def plot_2d_profile(results_OMWU, idx, ax):
         result = results_OMWU.list_of_results[idx]
         x_history = result.x_history
@@ -147,7 +148,16 @@ def _(iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
 
         # Plot markers once outside the loop
         ax.plot(0.5, 0.5, 'X', color='red', markersize=10, label='Starting Point')
-        ax.plot(x_0_star, y_0_star, 'o', markersize=10, label='Nash Equilibrium', color='green')
+        ax.plot(x_0_star, y_0_star, 'o', markersize=10, label='Iteration Nash Equilibrium', color='green')
+
+        # Plot the baseline A_delta Nash Equilibrium (the center of the circular sweep)
+        center_x = 1 / (1 + circular_delta)
+        center_y = 1 / (2 * (1 + circular_delta))
+        ax.plot(center_x, center_y, 'o', color='black', markersize=8, label=r'$A_{\delta} \text{ Nash Equilibrium (Center)}$')
+
+        # Set static limits to freeze the frame
+        ax.set_xlim(-0.02, 1.02)
+        ax.set_ylim(-0.02, 1.02)
 
         ax.set_xlabel("First Component of Player x Strategy")
         ax.set_ylabel("First Component of Player y Strategy")
@@ -351,7 +361,7 @@ def _(matrix_results, metric_method, np, opt_name, plt, vec_epsilon):
         plt.grid(True, which="both", ls="--", linewidth=0.5, alpha=0.6)
         plt.legend(loc='upper right', fontsize=12, frameon=True, facecolor='white', edgecolor='none')
 
-        fig.savefig(f"../images/mean_concentric_results_{method_name}_{opt_name}.svg", format="svg", bbox_inches='tight')
+        #fig.savefig(f"../images/mean_concentric_results_{method_name}_{opt_name}.svg", format="svg", bbox_inches='tight')
 
         plt.show()
 
@@ -440,6 +450,43 @@ def _(
         plt.show()
 
     compare_methods()
+    return
+
+
+@app.cell
+def _(np, plt, results_OMWU):
+    def plot_convergence_modes_comparison(results_OMWU, idx):
+        gaps_history = np.array(results_OMWU.list_of_results[idx].gaps_history)
+        steps = np.arange(len(gaps_history)) + 1
+
+        last_iterate = gaps_history
+        random_iterate = np.cumsum(gaps_history) / steps
+        best_iterate = np.minimum.accumulate(gaps_history)
+
+        fig, ax = plt.subplots(figsize=(10, 6), constrained_layout=True)
+        ax.loglog(steps, last_iterate, label='Last-Iterate Gap', color='red', alpha=0.3)
+        ax.loglog(steps, random_iterate, label='Random-Iterate (Running Avg)', color='orange', linewidth=2)
+        ax.loglog(steps, best_iterate, label='Best-Iterate (Running Min)', color='green', linewidth=2.5)
+
+        # Chose the constant C so that we can bound all iterates with the theoretical envelope
+        C = np.max(best_iterate * (steps ** (1/6)))                                                                                                                 
+        theoretical_bound = C * (steps ** (-1/6))                                                                                                                   
+        ax.loglog(steps, theoretical_bound, label=r'Theoretical $O(T^{-1/6})$ Envelope', color='black', linestyle='--', alpha=0.8)
+
+        ax.set_xlabel('Iteration Step $t$ (Log Scale)')
+        ax.set_ylabel('Duality Gap (Log Scale)')
+        ax.set_title('Separation of Convergence Modes for OMWU\nin Boundary-Adjacent Matrix Game', fontsize=14, weight='bold', pad=15)
+        ax.legend(loc='lower left', frameon=True, facecolor='white', edgecolor='none')
+        ax.grid(True, which="both", ls="--", alpha=0.5)
+
+        fig.savefig(f"../images/OMWU_Convergence_Modes_Separation_step_{idx}.svg", format="svg")
+        plt.show()
+
+    # Generate the separation plot for a highly ill-conditioned run (e.g. index 250, middle of the circular sweep)
+    plot_convergence_modes_comparison(results_OMWU,0)
+    plot_convergence_modes_comparison(results_OMWU,125)
+    plot_convergence_modes_comparison(results_OMWU,250)
+    plot_convergence_modes_comparison(results_OMWU,375)
     return
 
 
