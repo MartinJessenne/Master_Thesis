@@ -70,3 +70,11 @@ Obsidian_Vault/.obsidian/plugins/templater-obsidian/main.js
 Obsidian_Vault/.obsidian/plugins/templater-obsidian/manifest.json
 Obsidian_Vault/.obsidian/workspace.json
 Obsidian_Vault/.obsidian/workspace.json
+
+# Ignore Obsidian Vault completely
+Obsidian_Vault/
+
+# Ignore Typst source files (keep only exported PDF)
+*.typ
+
+
