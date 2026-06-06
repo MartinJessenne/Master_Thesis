@@ -1,8 +1,0 @@
-description = "Provide a concise, direct answer to the prompt, avoiding unnecessary filler or lengthy explanations."
-
-prompt = """
-Respond to the following prompt concisely going straight to the point. Prioritize directness and technical signal. Avoid preambles, apologies, or conversational filler.
-
-Prompt:
-{{args}}
-"""

@@ -77,4 +77,17 @@ Obsidian_Vault/
 # Ignore Typst source files (keep only exported PDF)
 *.typ
 
+# Gemini and agent files
+.gemini/
+.geminiignore
+GEMINI.md
+Optigame/GEMINI.md
+AGENTS.md
+CLAUDE.md
+.claude/
+skills-lock.json
+
+# Marimo caches
+__marimo__/
+
 
