@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [tool.uv.workspace]
-members = ["optigame"]
+members = ["Optigame"]
 
 [tool.uv.sources]
 optigame = { workspace = true }
