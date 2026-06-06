@@ -161,7 +161,8 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: sdist
-          args: -m optigame/Cargo.toml --out dist
+          args: --out ../dist
+          working-directory: optigame
           rust-toolchain: stable
       - name: Upload sdist
         uses: actions/upload-artifact@v6
