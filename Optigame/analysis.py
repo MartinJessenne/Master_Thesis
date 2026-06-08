@@ -135,7 +135,7 @@ def _(mo, results_OMWU):
 
 @app.cell
 def _(circular_delta, iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
-    def plot_2d_profile(results_OMWU, idx, ax):
+    def plot_2d_profile(results_OMWU, idx, ax, p_fn, q_fn, circular_delta):
         result = results_OMWU.list_of_results[idx]
         x_history = result.x_history
         y_history = result.y_history
@@ -184,14 +184,14 @@ def _(circular_delta, iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
         # ax.set_yscale('log')
         ax.grid(True, which="both", ls="--", linewidth=0.5)
 
-    def iteration_wise_study(results_OMWU, idx):
+    def iteration_wise_study(results_OMWU, idx, p_fn, q_fn, circular_delta):
         # create the canvas : 
         fig, axes = plt.subplot_mosaic([['2d_profile', 'duality_gap'],
                                        ['2d_profile', 'cumulative_total_var']],
                                       gridspec_kw={'width_ratios': [1, 1], 
                                       'height_ratios': [1, 1]}, figsize=(12, 8), constrained_layout=True)
         # plot the 2d profile :
-        plot_2d_profile(results_OMWU, idx, axes['2d_profile'])
+        plot_2d_profile(results_OMWU, idx, axes['2d_profile'], p_fn, q_fn, circular_delta)
 
         # plot the duality gap :
         plot_duality_gap_history(results_OMWU, idx, axes['duality_gap'])
@@ -201,7 +201,7 @@ def _(circular_delta, iteration_idx, np, p_fn, plt, q_fn, results_OMWU):
 
         return fig
 
-    fig = iteration_wise_study(results_OMWU, iteration_idx.value)
+    fig = iteration_wise_study(results_OMWU, iteration_idx.value, p_fn, q_fn, circular_delta)
     fig
     return (plot_2d_profile,)
 

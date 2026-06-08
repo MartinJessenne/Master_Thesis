@@ -3,6 +3,7 @@
 [![CI](https://github.com/MartinJessenne/Master_Thesis/actions/workflows/CI.yml/badge.svg)](https://github.com/MartinJessenne/Master_Thesis/actions/workflows/CI.yml)
 [![PyPI version](https://img.shields.io/pypi/v/optigame.svg)](https://pypi.org/project/optigame/)
 [![Python Version](https://img.shields.io/pypi/pyversions/optigame.svg)](https://pypi.org/project/optigame/)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_9wHnBHikkqjo2SvNesY5uX)
 
 This repository contains the implementation, benchmarking suite, and redaction materials of my Master's Thesis. The core objective is to study and replicate the results of two papers in game theory and online learning:
 

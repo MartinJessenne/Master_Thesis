@@ -49,7 +49,6 @@ RawConversion.ipynb
 # (Ignore large data files if they are >50MB)
 # data/*.csv
 # outputs/plots/*.png
-.gitnexus
 
 # Gemini
 .gemini
